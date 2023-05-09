@@ -45,6 +45,8 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+The app is located at [http://localhost:3000/](http://localhost:3000/)
+
 ## Test
 
 ```bash
