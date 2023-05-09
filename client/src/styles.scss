@@ -11,8 +11,15 @@ $secondary: #222b44;
 /* import bootstrap */
 @import "../node_modules/bootstrap/scss/bootstrap";
 
+/* bootstrap icons: https://icons.getbootstrap.com/ */
+@import "../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
+
 .btn-primary {
-    color: white;
+  color: white;
+}
+
+.bg-secondary {
+  color: white;
 }
 
 html,

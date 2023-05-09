@@ -6,5 +6,4 @@ import { Component } from '@angular/core';
   styleUrls: ['./not-found404.component.scss']
 })
 export class NotFound404Component {
-
 }
