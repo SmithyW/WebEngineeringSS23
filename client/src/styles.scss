@@ -5,11 +5,8 @@
 $primary: #248c83;
 $secondary: #222b44;
 
-// Merge the maps
-//$theme-colors: map-merge($theme-colors, $custom-colors);
-
-/* import bootstrap */
-@import "../node_modules/bootstrap/scss/bootstrap";
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
 
 /* bootstrap icons: https://icons.getbootstrap.com/ */
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
@@ -31,5 +28,4 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-/* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
+

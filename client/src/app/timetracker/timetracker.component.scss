@@ -1,0 +1,5 @@
+@import "../shared/scss/variable.scss";
+
+.timetracker {
+    height: calc(100vh - $header-height);
+}

@@ -5,7 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { TimetrackerRoutingModule } from './timetracker-routing.module';
 import { NavComponent } from './nav/nav.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -16,7 +16,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   imports: [
     CommonModule,
     TimetrackerRoutingModule,
-    MatToolbarModule
+    MatToolbarModule,
+    NgbModule,
   ]
 })
 export class TimetrackerModule { }
