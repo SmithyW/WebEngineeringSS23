@@ -1,0 +1,18 @@
+<div class="card position-absolute top-50 start-50 translate-middle" style="width: 35rem">
+  <div class="card-body">
+    <h4 class="card-title">Login</h4>
+    <div class="card-body">
+      <form>
+        <div class="mb-3">
+          <label for="usernameInput" class="form-label" >Benutzername</label>
+          <input type="email" class="form-control" id="usernameInput" aria-describedby="emailHelp" [formControl]="username">
+        </div>
+        <div class="mb-3">
+          <label for="passwordInput" class="form-label">Passwort</label>
+          <input type="password" class="form-control" id="passwordInput" [formControl]="password">
+        </div>
+        <button type="button" class="btn btn-primary">Anmelden</button>
+      </form>
+    </div>
+  </div>
+</div>

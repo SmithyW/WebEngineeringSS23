@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Customize Colors */
+
+$primary: #248c83;
+$secondary: #222b44;
+
+// Merge the maps
+//$theme-colors: map-merge($theme-colors, $custom-colors);
+
+/* import bootstrap */
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+.btn-primary {
+    color: white;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
