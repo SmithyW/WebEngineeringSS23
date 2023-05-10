@@ -21,6 +21,7 @@ export interface IContract {
     weeklyTime: Number;
     timePerWeekday: IWorkdayTime;
     supervisor: IUser | string;
+    user: IUser | string;
 }
 
 var workdayTimeSchema: mongoose.Schema = new mongoose.Schema({
@@ -34,7 +35,8 @@ var _schema: mongoose.Schema = new mongoose.Schema({
     end: { type: Date, required: true },
     weeklyTime: { type: Number, required: true },
     timePerWeekday: { type: [workdayTimeSchema], required: true, minLength: 1 },
-    supervisor: { type: mongoose.Types.ObjectId, ref: 'User' }
+    supervisor: { type: mongoose.Types.ObjectId, ref: 'User' },
+    user: { type: mongoose.Types.ObjectId, ref: 'User', required: true }
 });
 
 type ContractType = IContract & mongoose.Document;
