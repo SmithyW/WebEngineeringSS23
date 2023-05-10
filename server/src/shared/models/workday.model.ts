@@ -1,5 +1,5 @@
 import { TimeSpan } from "@shared/custom/timeSpan";
-import mongoose = require("mongoose");
+import mongoose from 'mongoose';
 import { IUser } from "./user.model";
 
 /**
