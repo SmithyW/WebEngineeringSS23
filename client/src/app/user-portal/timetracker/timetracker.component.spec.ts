@@ -6,10 +6,12 @@ describe('TimetrackerComponent', () => {
   let component: TimetrackerComponent;
   let fixture: ComponentFixture<TimetrackerComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [TimetrackerComponent]
-    });
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ TimetrackerComponent ]
+    })
+    .compileComponents();
+
     fixture = TestBed.createComponent(TimetrackerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
