@@ -1,5 +1,6 @@
 import { TimeSpan } from "@shared/custom/timeSpan";
 import mongoose = require("mongoose");
+import { IUser } from "./user.model";
 
 /**
  * Represents one day of work
@@ -9,7 +10,8 @@ export interface IWorkday {
     start: Date;
     end: Date;
     break: TimeSpan;
-    note: String;
+    note: string;
+    user: IUser | string;
 }
 
 var _schema: mongoose.Schema = new mongoose.Schema({
@@ -17,6 +19,7 @@ var _schema: mongoose.Schema = new mongoose.Schema({
     end: { type: Date, required: true },
     break: { type: TimeSpan },
     note: { type: String },
+    user: { type: mongoose.Types.ObjectId, ref: 'User' },
 })
 
 type WorkdayType = IWorkday & mongoose.Document;
