@@ -1,1 +1,33 @@
-<p>timetracker works!</p>
+<div class="container my-5">
+    <div>
+        <table class="table">
+            <thead class="bg-secondary text-light">
+              <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Arbeitsbeginn</th>
+                <th scope="col">Arbeitsende</th>
+                <th scope="col">Dauer Pausen Gesamt</th>
+                <th scope="col">Erfasste Arbeitszeit</th>
+                <th scope="col">Geplante Arbeitszeit</th>
+                <th scope="col">Mehr-/ Minderstunden</th>
+                <th scope="col">Bemerkungen</th>
+              </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let day of month">
+                    <tr>
+                        <td>{{day.toLocaleString()}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>-</td>
+                    </tr>
+                </ng-container>
+            </tbody>
+          </table>
+    </div>
+
+</div>

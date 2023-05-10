@@ -3,3 +3,8 @@
 .userportal {
     height: calc(100vh - $header-height);
 }
+
+.scrollcontainer {
+    height: calc(100vh - $header-height);
+    overflow-y: scroll;
+}
