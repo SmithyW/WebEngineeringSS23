@@ -14,16 +14,16 @@
               </tr>
             </thead>
             <tbody>
-                <ng-container *ngFor="let day of month">
+                <ng-container *ngFor="let dayRecord of data">
                     <tr>
-                        <td>{{day.toLocaleString()}}</td>
+                        <td>{{dayRecord.day.toLocaleString()}}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>-</td>
+                        <td>{{dayRecord.comments}}</td>
                     </tr>
                 </ng-container>
             </tbody>
