@@ -4,6 +4,9 @@ import { DateTimeUtilsService, Month } from "src/app/services/utils/date-time-ut
 import { IWorkday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
 import { Subscription } from "rxjs";
+import * as moment from 'moment';
+
+moment.locale('de');
 
 @Component({
 	selector: "app-timetracker",
@@ -32,6 +35,11 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.subscriptions.unsubscribe();
 	}
 
+  formatDate(date: Moment): string {
+    date.locale("de");
+    return date.format("dd DD.MM.YYYY");
+  }
+
 	private fetchWorkdays(): void {
 		const workdaySubscription = this.rest.fetchWorkdays(Month.MAY).subscribe({
 			next: (workdayData) => {
@@ -52,7 +60,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.data = [];
 		this.dates.forEach((day) => {
 			const record: DayRecord = {
-				day: day.toDate(),
+				day: day,
 				workStart: undefined,
 				workEnd: undefined,
 				breaksDuration: undefined,
@@ -67,7 +75,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 }
 
 export interface DayRecord {
-	day: Date;
+	day: Moment;
 	workStart: Date | undefined;
 	workEnd: Date | undefined;
 	breaksDuration: undefined;

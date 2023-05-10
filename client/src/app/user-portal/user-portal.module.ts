@@ -9,6 +9,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TimetrackerComponent } from './timetracker/timetracker.component';
 import { ContractsComponent } from './contracts/contracts.component';
 import { AccountDetailsComponent } from './account-details/account-details.component';
+import { NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+import { FormsModule } from '@angular/forms';
+import { MatCommonModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -23,7 +27,12 @@ import { AccountDetailsComponent } from './account-details/account-details.compo
     CommonModule,
     UserPortalRoutingModule,
     MatToolbarModule,
+    MatCommonModule,
+    MatFormFieldModule,
     NgbModule,
+    NgxMatTimepickerModule,
+    NgxMatNativeDateModule,
+    FormsModule,
   ]
 })
 export class UserPortalModule { }
