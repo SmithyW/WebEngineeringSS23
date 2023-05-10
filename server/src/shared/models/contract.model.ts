@@ -19,7 +19,7 @@ export interface IContract {
   begin: Date;
   end: Date;
   weeklyTime: number;
-  timePerWeekday: IWorkdayTime;
+  timePerWeekday: [IWorkdayTime];
   supervisor: IUser | string;
   user: IUser | string;
 }
