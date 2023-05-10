@@ -9,4 +9,10 @@ export class User {
         length: 30
     })
     name: string
+
+    @Column()
+    mail: string
+
+    @Column()
+    phone: string
 }
