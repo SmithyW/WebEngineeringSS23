@@ -1,4 +1,4 @@
-import mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 export interface IUser {
     _id: string;
@@ -7,7 +7,7 @@ export interface IUser {
     phone?: string;
 }
 
-var _schema: mongoose.Schema = new mongoose.Schema({
+const _schema: mongoose.Schema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     phone: String
