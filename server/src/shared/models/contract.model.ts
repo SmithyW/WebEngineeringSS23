@@ -14,7 +14,7 @@ export interface IWorkdayTime {
  * Represents a Contract and its default working time agreement
  */
 export interface IContract {
-  _id: string;
+  _id?: string;
   num: number;
   begin: Date;
   end: Date;
