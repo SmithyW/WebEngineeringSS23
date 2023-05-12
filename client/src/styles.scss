@@ -10,6 +10,7 @@ $secondary: #222b44;
 
 /* bootstrap icons: https://icons.getbootstrap.com/ */
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
+@import "../node_modules/bootstrap/scss/variables";
 
 .btn-primary {
   color: white;

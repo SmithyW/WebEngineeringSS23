@@ -3,10 +3,10 @@
     <table class="table">
       <thead class="bg-secondary text-light">
         <tr>
-          <th scope="col">Datum</th>
+          <th colspan="2" scope="col">Datum</th>
           <th scope="col">Arbeitsbeginn</th>
           <th scope="col">Arbeitsende</th>
-          <th scope="col">Dauer Pausen Gesamt</th>
+          <th scope="col">Dauer Pausen</th>
           <th scope="col">Erfasste Arbeitszeit</th>
           <th scope="col">Geplante Arbeitszeit</th>
           <th scope="col">Mehr-/ Minderstunden</th>
@@ -15,24 +15,17 @@
       </thead>
       <tbody>
         <ng-container *ngFor="let dayRecord of data">
-          <tr>
-            <td>{{formatDate(dayRecord.day)}}</td>
-            <td>
-              <div class="mb-3">
-                <input type="time" class="form-control text-center">
-              </div>
-            </td>
-            <td>
-              <ngx-mat-timepicker [ngModel]="dayRecord.workEnd" [showSpinners]="false" [stepHour]="1" [stepMinute]="1"
-                [showSeconds]="false">
-              </ngx-mat-timepicker>
-            </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{dayRecord.comments}}</td>
-          </tr>
+          <ng-container [ngSwitch]="getDayType(dayRecord.day)">
+            <ng-container *ngSwitchCase="HOLIDAY">
+              <tr app-day-row [dayRecord]="dayRecord" class="holiday"></tr>
+            </ng-container>
+            <ng-container *ngSwitchCase="WEEKEND">
+              <tr app-day-row [dayRecord]="dayRecord" class="weekend"></tr>
+            </ng-container>
+            <ng-container *ngSwitchCase="WORKDAY">
+              <tr app-day-row [dayRecord]="dayRecord"></tr>
+            </ng-container>
+          </ng-container>
         </ng-container>
       </tbody>
     </table>

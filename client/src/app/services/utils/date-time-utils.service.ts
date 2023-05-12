@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { TimeSpan } from '@shared/custom/timeSpan';
 import * as dateUtils from '@wojtekmaj/date-utils';
-import * as _moment from 'moment';
 import { Moment } from 'moment';
 import { extendMoment } from 'moment-range';
+import * as dateAndTime from 'date-and-time';
+import * as _moment from 'moment-feiertage';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +24,37 @@ export class DateTimeUtilsService {
     const days = dateUtils.getDaysInMonth(now);
     const monthRange = this.moment.rangeFromInterval('day', days, monthStart);
     return Array.from(monthRange.by('day', {excludeEnd: true, step: 1}));
+  }
+
+  public timespanToDate(span: TimeSpan): Date {
+    return _moment({
+      hours: span.hours,
+      minutes: span.minutes
+    }).toDate();
+  }
+
+  public dateToTimespan(date: Date): TimeSpan {
+    return new TimeSpan(date.getHours(), date.getMinutes());
+  }
+
+  public isWorkday(day: Moment): boolean {
+    return !this.isWeekend(day) && ! this.isGermanHolidayNRW(day);
+  }
+
+  public isGermanHolidayNRW(day: Moment): boolean {
+    const holidayState = day.isHoliday(['NW']);
+    if (typeof holidayState === 'boolean') {
+      return holidayState;
+    }
+    if (typeof holidayState === 'string') {
+      return true;
+    }
+    return holidayState.allStates || holidayState.holidayStates.includes('NW');
+  }
+
+  public isWeekend(day: Moment):boolean {
+    // Mon - Fri = 1...5, Sat = 6, Sun = 7
+    return day.isoWeekday() > 5;
   }
 
   private getMonth(num: number): Month {
