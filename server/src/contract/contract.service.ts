@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { IContract } from '@shared/models/contract.model';
+import { CreateContractDto } from './dto/create-contract.dto';
+import { UpdateContractDto } from './dto/update-contract.dto';
+import { Contract, ContractDocument } from '@shared/models/contract.model';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ContractService {
-  create(contract: IContract) {
 
-    return 'This action adds a new contract';
+  constructor(@InjectModel(Contract.name) private contractModel: Model<Contract>) {}
+
+  async create(createContractDto: CreateContractDto): Promise<Contract> {
+    const createdContract: ContractDocument = new this.contractModel(createContractDto);
+    createdContract.setWeeklyTime();
+    return createdContract.save();
   }
 
-  findAll() {
-    return `This action returns all contract`;
+  async findAll(): Promise<Contract[]> {
+    return this.contractModel.find()
+      .populate('user')
+      .populate('supervisor')
+      .exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} contract`;
+  async findOne(id: string): Promise<Contract> {
+    return this.contractModel.findOne({ _id: id })
+      .populate('user')
+      .populate('supervisor')
+      .exec();
   }
 
-  update(id: number, contract: IContract) {
-    return `This action updates a #${id} contract`;
+  async update(id: string, updateContractDto: UpdateContractDto): Promise<Contract> {
+    const updatedContract = new this.contractModel(updateContractDto);
+    updatedContract.setWeeklyTime();
+    return this.contractModel.findOneAndUpdate({ _id: id }, updateContractDto, { new: true })
+      .populate('user')
+      .populate('supervisor')
+      .exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} contract`;
+  async remove(id: string): Promise<any> {
+    return this.contractModel.deleteOne({ _id: id }).exec();
   }
 }
