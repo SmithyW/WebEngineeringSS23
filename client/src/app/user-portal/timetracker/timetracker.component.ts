@@ -6,6 +6,8 @@ import { RestService } from "src/app/services/rest/rest.service";
 import { BehaviorSubject, Subscription } from "rxjs";
 import * as moment from "moment";
 import { Maybe } from "@shared/custom/types";
+import { FormArray } from "@angular/forms";
+import { AbstractControl } from "@angular/forms";
 
 moment.locale("de");
 
@@ -20,6 +22,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	readonly WORKDAY = DayType.WORKDAY;
 
 	data: DayRecord[] = [];
+	forms: FormArray<AbstractControl> = new FormArray<AbstractControl>([]);
 	private dataMap: Map<number, DayRecord> = new Map();
 
 	private dates: Moment[] = [];
@@ -53,6 +56,14 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	getHolidayName(day: Moment): string {
 		return this.dateTimeUtil.getGermanHolidayName(day, ["NW"]);
+	}
+
+	addRowForm(form: FormArray): void {
+		this.forms.push(form);
+	}
+
+	test() {
+		console.info(this.forms);
 	}
 
 	private fetchWorkdays(): void {

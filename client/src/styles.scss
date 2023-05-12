@@ -6,13 +6,15 @@ $primary: #248c83;
 $secondary: #222b44;
 
 /* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap/scss/bootstrap.scss';
 
 /* bootstrap icons: https://icons.getbootstrap.com/ */
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
 @import "../node_modules/bootstrap/scss/variables";
 
-.btn-primary {
+.btn-primary,
+.btn-primary:disabled,
+.btn-primary:hover {
   color: white;
 }
 

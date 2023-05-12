@@ -1,9 +1,9 @@
-@import "../../../../node_modules/bootstrap/scss/bootstrap.scss";
+@import '../../../styles.scss';
 
 .holiday {
-    background-color: $red-300;
+	background-color: $red-300;
 }
 
 .weekend {
-    background-color: $gray-500;
+	background-color: $gray-500;
 }

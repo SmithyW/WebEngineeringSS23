@@ -1,7 +1,7 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { Moment } from "moment";
 import { DayRecord } from "../timetracker.component";
-import { FormArray, FormControl } from "@angular/forms";
+import { Form, FormArray, FormControl } from "@angular/forms";
 import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
 import * as moment from "moment";
 import { BehaviorSubject, Observer, Subscription } from "rxjs";
@@ -15,6 +15,8 @@ import { IWorkday } from "@shared/models/workday.model";
 })
 export class DayRowComponent implements OnInit, OnDestroy {
 	@Input() dayRecord: DayRecord | undefined;
+
+	@Output() rowForm: EventEmitter<FormArray> = new EventEmitter();
 
 	startForm: FormControl<string>;
 	endForm: FormControl<string>;
@@ -40,6 +42,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		this.subscripeValues();
 		this.subscripeForms();
 		this.initFormValues(this.dayRecord?.data.getValue());
+		this.rowForm.emit(this.form);
 	}
 
 	ngOnDestroy(): void {
@@ -63,6 +66,10 @@ export class DayRowComponent implements OnInit, OnDestroy {
 			this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(workday.break)));
 			this.noteForm.setValue(workday.note);
 		}
+		this.startForm.markAsUntouched();
+		this.endForm.markAsUntouched();
+		this.breakForm.markAsUntouched();
+		this.noteForm.markAsUntouched();
 		this.form.markAsUntouched();
 	}
 
@@ -75,7 +82,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.startTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.endTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.breakTime.subscribe(onTimeChange));
-		this.subscriptions.add(this.dayRecord?.data.subscribe({next: (workday) => this.initFormValues(workday)}));
+		this.subscriptions.add(this.dayRecord?.data.subscribe({ next: (workday) => this.initFormValues(workday) }));
 	}
 
 	private subscripeForms() {

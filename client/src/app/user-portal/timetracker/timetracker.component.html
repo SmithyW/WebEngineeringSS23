@@ -23,7 +23,7 @@
               <tr app-disabled-day-row [dayRecord]="dayRecord" class="weekend"></tr>
             </ng-container>
             <ng-container *ngSwitchCase="WORKDAY">
-              <tr app-day-row [dayRecord]="dayRecord"></tr>
+              <tr app-day-row [dayRecord]="dayRecord" (rowForm)="addRowForm($event)"></tr>
             </ng-container>
           </ng-container>
         </ng-container>
@@ -31,4 +31,7 @@
     </table>
   </div>
 
+  <div>
+    <button type="button" class="btn btn-primary" [disabled]="forms.pristine">Speichern</button>
+  </div>
 </div>
