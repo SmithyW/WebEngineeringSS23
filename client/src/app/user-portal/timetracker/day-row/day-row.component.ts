@@ -6,6 +6,7 @@ import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.ser
 import * as moment from "moment";
 import { BehaviorSubject, Observer, Subscription } from "rxjs";
 import { Maybe } from "@shared/custom/types";
+import { IWorkday } from "@shared/models/workday.model";
 
 @Component({
 	selector: "tr[app-day-row]",
@@ -38,15 +39,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.subscripeValues();
 		this.subscripeForms();
-		if (this.dayRecord?.data) {
-			this.startForm.setValue(this.getTimeFromDate(this.dayRecord?.data?.start));
-			this.endForm.setValue(this.getTimeFromDate(this.dayRecord?.data?.end));
-			this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(this.dayRecord?.data?.break)));
-			this.noteForm.setValue(this.dayRecord?.data?.note);
-		}
-		this.startForm.registerOnChange(() => {
-			console.log(this.startForm.value);
-		});
+		this.initFormValues(this.dayRecord?.data.getValue());
 	}
 
 	ngOnDestroy(): void {
@@ -63,6 +56,16 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		return date.format("DD.MM.YYYY");
 	}
 
+	private initFormValues(workday: IWorkday | undefined): void {
+		if (workday) {
+			this.startForm.setValue(this.getTimeFromDate(workday.start));
+			this.endForm.setValue(this.getTimeFromDate(workday.end));
+			this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(workday.break)));
+			this.noteForm.setValue(workday.note);
+		}
+		this.form.markAsUntouched();
+	}
+
 	private subscripeValues() {
 		const onTimeChange: Partial<Observer<any>> = {
 			next: (val) => {
@@ -72,6 +75,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.startTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.endTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.breakTime.subscribe(onTimeChange));
+		this.subscriptions.add(this.dayRecord?.data.subscribe({next: (workday) => this.initFormValues(workday)}));
 	}
 
 	private subscripeForms() {

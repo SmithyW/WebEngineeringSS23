@@ -3,10 +3,11 @@ import { Moment } from "moment";
 import { DateTimeUtilsService, Month } from "src/app/services/utils/date-time-utils.service";
 import { IWorkday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
-import { Subscription } from "rxjs";
-import * as moment from 'moment';
+import { BehaviorSubject, Subscription } from "rxjs";
+import * as moment from "moment";
+import { Maybe } from "@shared/custom/types";
 
-moment.locale('de');
+moment.locale("de");
 
 @Component({
 	selector: "app-timetracker",
@@ -14,10 +15,9 @@ moment.locale('de');
 	styleUrls: ["./timetracker.component.scss"],
 })
 export class TimetrackerComponent implements OnInit, OnDestroy {
-
-  readonly HOLIDAY = DayType.HOLIDAY;
-  readonly WEEKEND = DayType.WEEKEND;
-  readonly WORKDAY = DayType.WORKDAY;
+	readonly HOLIDAY = DayType.HOLIDAY;
+	readonly WEEKEND = DayType.WEEKEND;
+	readonly WORKDAY = DayType.WORKDAY;
 
 	data: DayRecord[] = [];
 	private dataMap: Map<number, DayRecord> = new Map();
@@ -41,37 +41,33 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.subscriptions.unsubscribe();
 	}
 
-  getDayType(day: Moment): DayType {
-    if (this.dateTimeUtil.isGermanHolidayNRW(day, ['NW'])) {
-      return DayType.HOLIDAY;
-    } else if (this.dateTimeUtil.isWeekend(day)) {
-      return DayType.WEEKEND;
-    } else {
-      return DayType.WORKDAY;
-    }
-  }
+	getDayType(day: Moment): DayType {
+		if (this.dateTimeUtil.isGermanHolidayNRW(day, ["NW"])) {
+			return DayType.HOLIDAY;
+		} else if (this.dateTimeUtil.isWeekend(day)) {
+			return DayType.WEEKEND;
+		} else {
+			return DayType.WORKDAY;
+		}
+	}
 
-  getHolidayName(day: Moment): string {
-    return this.dateTimeUtil.getGermanHolidayName(day, ['NW']);
-  }
+	getHolidayName(day: Moment): string {
+		return this.dateTimeUtil.getGermanHolidayName(day, ["NW"]);
+	}
 
 	private fetchWorkdays(): void {
 		const workdaySubscription = this.rest.fetchWorkdays(Month.MAY).subscribe({
 			next: (workdaysData) => {
-				console.log("Get workdays:", workdaysData);
-        workdaysData.forEach(workday => {
-          const dayRecord = this.dataMap.get(this.getIndexFromDate(moment(workday.start)));
-          if (dayRecord) {
-            dayRecord.data = workday;
-          }
-        });
+				workdaysData.forEach((workday) => {
+					const dayRecord = this.dataMap.get(this.getIndexFromDate(moment(workday.start)));
+					if (dayRecord) {
+						dayRecord.data.next(workday);
+					}
+				});
 			},
 			error: (err) => {
 				console.error("Error while fetching workdays", err);
-			},
-			complete: () => {
-				console.info("fetching workdays completed");
-			},
+			}
 		});
 		this.subscriptions.add(workdaySubscription);
 	}
@@ -79,31 +75,31 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	private setMonth(): void {
 		this.dates = this.dateTimeUtil.getDaysInMonth(this.currentMonth, this.currentYear);
 		this.data = [];
-    this.dataMap.clear();
+		this.dataMap.clear();
 		this.dates.forEach((day) => {
 			const record: DayRecord = {
 				day: day,
-        data: undefined
+				data: new BehaviorSubject<Maybe<IWorkday>>(undefined),
 			};
-      this.dataMap.set(this.getIndexFromDate(record.day), record);
+			this.dataMap.set(this.getIndexFromDate(record.day), record);
 		});
-    this.data = Array.from(this.dataMap.values());
+		this.data = Array.from(this.dataMap.values());
 	}
 
-  private getIndexFromDate(date: Moment): number {
-    const key = date.format("YYYYMMDD");
-    const index = new Number(key);
-    return index.valueOf();
-  }
+	private getIndexFromDate(date: Moment): number {
+		const key = date.format("YYYYMMDD");
+		const index = new Number(key);
+		return index.valueOf();
+	}
 }
 
-export interface DayRecord {
-	day: Moment;
-  data: IWorkday | undefined;
+export type DayRecord = {
+	day: Moment,
+	data: BehaviorSubject<Maybe<IWorkday>>
 }
 
 enum DayType {
-  WORKDAY,
-  WEEKEND,
-  HOLIDAY
+	WORKDAY,
+	WEEKEND,
+	HOLIDAY,
 }
