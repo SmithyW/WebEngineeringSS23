@@ -32,6 +32,8 @@
   </div>
 
   <div>
-    <button type="button" class="btn btn-primary" [disabled]="forms.pristine">Speichern</button>
+    <button type="button" (click)="save()" class="btn btn-primary me-3" [disabled]="forms.pristine" id="save">Speichern</button>
+    <button type="button" (click)="sign()" class="btn btn-outline-secondary" [disabled]="forms.pristine || !isMonthCompleted()" id="sign">Signieren und Freigeben</button>
+    <label *ngIf="!isMonthCompleted()" for="sign" class="text-danger ms-2">Der Monat muss zum Signieren und Freigeben abgeschlossen sein.</label>
   </div>
 </div>

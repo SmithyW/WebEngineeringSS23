@@ -61,9 +61,18 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	addRowForm(form: FormArray): void {
 		this.forms.push(form);
 	}
+	
+	save() {
+		console.warn("TODO: save")
+	}
 
-	test() {
-		console.info(this.forms);
+	sign() {
+		console.warn("TODO: sign")
+	}
+
+	isMonthCompleted(): boolean {
+		console.warn("TODO: sign vor Monatsende, wenn Vertragsende früher");
+		return this.dates[this.dates.length-1].isBefore(moment.now());
 	}
 
 	private fetchWorkdays(): void {
