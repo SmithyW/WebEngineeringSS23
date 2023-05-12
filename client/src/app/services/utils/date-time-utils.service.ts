@@ -5,6 +5,7 @@ import { Moment } from 'moment';
 import { extendMoment } from 'moment-range';
 import * as dateAndTime from 'date-and-time';
 import * as _moment from 'moment-feiertage';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -37,12 +38,12 @@ export class DateTimeUtilsService {
     return new TimeSpan(date.getHours(), date.getMinutes());
   }
 
-  public isWorkday(day: Moment): boolean {
-    return !this.isWeekend(day) && ! this.isGermanHolidayNRW(day);
+  public isWorkday(day: Moment, state: GermanState[]): boolean {
+    return !this.isWeekend(day) && ! this.isGermanHolidayNRW(day, state);
   }
 
-  public isGermanHolidayNRW(day: Moment): boolean {
-    const holidayState = day.isHoliday(['NW']);
+  public isGermanHolidayNRW(day: Moment, state: GermanState[]): boolean {
+    const holidayState = day.isHoliday(state);
     if (typeof holidayState === 'boolean') {
       return holidayState;
     }
@@ -50,6 +51,17 @@ export class DateTimeUtilsService {
       return true;
     }
     return holidayState.allStates || holidayState.holidayStates.includes('NW');
+  }
+
+  public getGermanHolidayName(day: Moment, state: GermanState[]): string {
+    const holidayState = day.isHoliday(state);
+    if (typeof holidayState === 'boolean') {
+      return 'unknown';
+    }
+    if (typeof holidayState === 'string') {
+      return holidayState;
+    }
+    return holidayState.holidayName;
   }
 
   public isWeekend(day: Moment):boolean {
@@ -103,3 +115,6 @@ export enum Month {
   NOVEMBER = 10,
   DECEMBER = 11,
 }
+
+export const AVAILABLE_REGIONS = (<T extends string[]>(...o: T)=> o)('BW','BY','BE','BB','HB','HH','HE','MV','NI','NW','RP','SL','SN','ST','SH','TH');
+export type GermanState = typeof AVAILABLE_REGIONS[number];

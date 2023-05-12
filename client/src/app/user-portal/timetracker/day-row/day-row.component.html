@@ -2,17 +2,17 @@
     <td>{{getWeekday(dayRecord.day)}}</td>
     <td>{{formatDate(dayRecord.day)}}</td>
     <td>
-        <div class="mb-3">
-            <input type="time" class="form-control text-center" [formControl]="startForm" [ngModel]="dayRecord.data?.start">
+        <div class="">
+            <input type="time" class="form-control text-center" [formControl]="startForm">
         </div>
     </td>
     <td>
-        <div class="mb-3">
+        <div class="">
             <input type="time" class="form-control text-center" [formControl]="endForm">
         </div>
     </td>
     <td>
-        <div class="mb-3">
+        <div class="">
             <input type="time" class="form-control text-center" [formControl]="breakForm">
         </div>
     </td>
@@ -20,7 +20,7 @@
     <td></td>
     <td></td>
     <td>
-        <div class="mb-3">
+        <div class="">
             <input type="text" class="form-control text-center" [value]="dayRecord.data?.note" [formControl]="noteForm">
         </div>
     </td>

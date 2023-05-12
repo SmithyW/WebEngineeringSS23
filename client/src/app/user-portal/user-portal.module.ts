@@ -14,6 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCommonModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DayRowComponent } from './timetracker/day-row/day-row.component';
+import { DisabledDayRowComponent } from './timetracker/disabled-day-row/disabled-day-row.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { DayRowComponent } from './timetracker/day-row/day-row.component';
     ContractsComponent,
     AccountDetailsComponent,
     DayRowComponent,
+    DisabledDayRowComponent,
   ],
   imports: [
     CommonModule,

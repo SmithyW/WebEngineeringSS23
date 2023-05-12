@@ -17,10 +17,10 @@
         <ng-container *ngFor="let dayRecord of data">
           <ng-container [ngSwitch]="getDayType(dayRecord.day)">
             <ng-container *ngSwitchCase="HOLIDAY">
-              <tr app-day-row [dayRecord]="dayRecord" class="holiday"></tr>
+              <tr app-disabled-day-row [dayRecord]="dayRecord" [note]="getHolidayName(dayRecord.day)" class="holiday"></tr>
             </ng-container>
             <ng-container *ngSwitchCase="WEEKEND">
-              <tr app-day-row [dayRecord]="dayRecord" class="weekend"></tr>
+              <tr app-disabled-day-row [dayRecord]="dayRecord" class="weekend"></tr>
             </ng-container>
             <ng-container *ngSwitchCase="WORKDAY">
               <tr app-day-row [dayRecord]="dayRecord"></tr>

@@ -42,7 +42,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
   getDayType(day: Moment): DayType {
-    if (this.dateTimeUtil.isGermanHolidayNRW(day)) {
+    if (this.dateTimeUtil.isGermanHolidayNRW(day, ['NW'])) {
       return DayType.HOLIDAY;
     } else if (this.dateTimeUtil.isWeekend(day)) {
       return DayType.WEEKEND;
@@ -51,13 +51,19 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
     }
   }
 
+  getHolidayName(day: Moment): string {
+    return this.dateTimeUtil.getGermanHolidayName(day, ['NW']);
+  }
+
 	private fetchWorkdays(): void {
 		const workdaySubscription = this.rest.fetchWorkdays(Month.MAY).subscribe({
 			next: (workdaysData) => {
 				console.log("Get workdays:", workdaysData);
         workdaysData.forEach(workday => {
           const dayRecord = this.dataMap.get(this.getIndexFromDate(moment(workday.start)));
-          
+          if (dayRecord) {
+            dayRecord.data = workday;
+          }
         });
 			},
 			error: (err) => {
@@ -77,7 +83,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.dates.forEach((day) => {
 			const record: DayRecord = {
 				day: day,
-        data: undefined,
+        data: undefined
 			};
       this.dataMap.set(this.getIndexFromDate(record.day), record);
 		});
