@@ -1,27 +1,21 @@
 import { TimeSpan } from "@shared/custom/timeSpan";
-import mongoose from 'mongoose';
-import { IUser } from "./user.model";
+import mongoose, { HydratedDocument } from 'mongoose';
+import { User } from "./user.model";
+import { Schema, SchemaFactory, Prop } from "@nestjs/mongoose";
+import { EWeekday } from "@shared/enums/weekday.enum";
 
-/**
- * Represents one day of work
- */
-export interface IWorkday {
-    _id: string;
-    start: Date;
-    end: Date;
-    break: TimeSpan;
-    note: string;
-    user: IUser | string;
+export type WorkdayDocument = HydratedDocument<Workday>;
+
+@Schema()
+export class Workday {
+    @Prop({ required: true })
+    day: EWeekday;
+
+    @Prop({ required: true })
+    time: TimeSpan;
+
+    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    user: User | string;    
 }
 
-var _schema: mongoose.Schema = new mongoose.Schema({
-    start: { type: Date, required: true },
-    end: { type: Date, required: true },
-    break: { type: TimeSpan },
-    note: { type: String },
-    user: { type: mongoose.Types.ObjectId, ref: 'User' },
-})
-
-type WorkdayType = IWorkday & mongoose.Document;
-
-export default mongoose.model<WorkdayType>('Workday', _schema);
+export const WorkdaySchema = SchemaFactory.createForClass(Workday);
