@@ -7,6 +7,8 @@ export type ContractDocument = HydratedDocument<Contract>;
 
 @Schema()
 export class Contract {
+    _id: string | mongoose.Types.ObjectId;
+    
     @Prop({ required: true })
     num: number;
 

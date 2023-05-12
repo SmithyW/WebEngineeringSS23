@@ -2,17 +2,24 @@ import { TimeSpan } from "@shared/custom/timeSpan";
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from "./user.model";
 import { Schema, SchemaFactory, Prop } from "@nestjs/mongoose";
-import { EWeekday } from "@shared/enums/weekday.enum";
 
 export type WorkdayDocument = HydratedDocument<Workday>;
 
 @Schema()
 export class Workday {
-    @Prop({ required: true })
-    day: EWeekday;
+    _id: string | mongoose.Types.ObjectId;
 
     @Prop({ required: true })
-    time: TimeSpan;
+    start: Date;
+
+    @Prop({ required: true })
+    end: Date;
+
+    @Prop({ required: true })
+    break: TimeSpan;
+
+    @Prop({ required: false })
+    note?: string;
 
     @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User | string;    

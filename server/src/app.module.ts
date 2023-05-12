@@ -10,7 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot(`mongodb://ontime:0nt1me@localhost:27017/ontime?authSource=${process.env.DB_AUTH_SOURCE}}`),
     ContractModule,
     UserModule,
     WorkdayModule
