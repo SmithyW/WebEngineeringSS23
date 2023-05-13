@@ -1,3 +1,5 @@
+db = new Mongo().getDB("admin");
+
 db.createUser({
     user: 'ontime',
     pwd: '0nt1me',
