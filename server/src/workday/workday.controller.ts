@@ -5,7 +5,7 @@ import { UpdateWorkdayDto } from './dto/update-workday.dto';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 import { Workday } from '@shared/models/workday.model';
 
-@Controller('workday')
+@Controller('workdays')
 export class WorkdayController {
   constructor(private readonly workdayService: WorkdayService) {}
 
@@ -59,13 +59,13 @@ export class WorkdayController {
   );
   }
 
-  @Get(':id')
+  @Get(':workdayId')
   @HttpCode(HttpStatus.OK)
   findOne(
-    @Param('id') id: string,
+    @Param('workdayId') workdayId: string,
     @Res() response
     ): Promise<IBaseResponse<Workday | any>> {
-      return this.workdayService.findOne(id).then((workday: Workday) => {
+      return this.workdayService.findOne(workdayId).then((workday: Workday) => {
         const res: IBaseResponse<Workday> = {
           success: true,
           message: 'Workday found',
@@ -84,14 +84,14 @@ export class WorkdayController {
     );
   }
 
-  @Patch(':id')
+  @Patch(':workdayId')
   @HttpCode(HttpStatus.OK)
   update(
-    @Param('id') id: string,
+    @Param('workdayId') workdayId: string,
     @Body() updateWorkdayDto: UpdateWorkdayDto,
     @Res() response
     ): Promise<IBaseResponse<Workday | any>> {
-      return this.workdayService.update(id, updateWorkdayDto).then((workday: Workday) => {
+      return this.workdayService.update(workdayId, updateWorkdayDto).then((workday: Workday) => {
         const res: IBaseResponse<Workday> = {
           success: true,
           message: 'Workday updated',
@@ -110,13 +110,13 @@ export class WorkdayController {
     );
   }
 
-  @Delete(':id')
+  @Delete(':workdayId')
   @HttpCode(HttpStatus.OK)
   remove(
-    @Param('id') id: string,
+    @Param('workdayId') workdayId: string,
     @Res() response
     ): Promise<IBaseResponse<any>> {
-      return this.workdayService.remove(id).then(() => {
+      return this.workdayService.remove(workdayId).then(() => {
         const res: IBaseResponse<any> = {
           success: true,
           message: 'Workday deleted',

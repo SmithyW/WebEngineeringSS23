@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 import { User } from '@shared/models/user.model';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -58,13 +58,13 @@ export class UserController {
   );
   }
 
-  @Get(':id')
+  @Get(':userId')
   @HttpCode(HttpStatus.OK)
   findOne(
-    @Param('id') id: string,
+    @Param('userId') userId: string,
     @Res() response
     ): Promise<IBaseResponse<User | any>> {
-      return this.userService.findOne(id).then((user: User) => {
+      return this.userService.findOne(userId).then((user: User) => {
         const res: IBaseResponse<User> = {
           success: true,
           message: 'User found',
@@ -83,14 +83,14 @@ export class UserController {
     );
   }
 
-  @Patch(':id')
+  @Patch(':userId')
   @HttpCode(HttpStatus.OK)
   update(
-    @Param('id') id: string,
+    @Param('userId') userId: string,
     @Res() response,
     @Body() updateUserDto: UpdateUserDto
     ): Promise<IBaseResponse<User | any>> {
-      return this.userService.update(id, updateUserDto).then((user: User) => {
+      return this.userService.update(userId, updateUserDto).then((user: User) => {
         const res: IBaseResponse<User> = {
           success: true,
           message: 'User updated',
@@ -109,13 +109,13 @@ export class UserController {
     );
   }
 
-  @Delete(':id')
+  @Delete(':userId')
   @HttpCode(HttpStatus.OK)
   remove(
-    @Param('id') id: string,
+    @Param('userId') userId: string,
     @Res() response
     ): Promise<IBaseResponse<any>> {
-      return this.userService.remove(id).then((user: User) => {
+      return this.userService.remove(userId).then((user: User) => {
         const res: IBaseResponse<any> = {
           success: true,
           message: 'User deleted',
