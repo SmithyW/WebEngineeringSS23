@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Moment } from "moment";
 import { DateTimeUtilsService, Month } from "src/app/services/utils/date-time-utils.service";
-import { IWorkday } from "@shared/models/workday.model";
+import { Workday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
 import { BehaviorSubject, Subscription } from "rxjs";
 import * as moment from "moment";
@@ -138,7 +138,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.dates.forEach((day) => {
 			const record: DayRecord = {
 				day: day,
-				data: new BehaviorSubject<Maybe<IWorkday>>(undefined),
+				data: new BehaviorSubject<Maybe<Workday>>(undefined),
 			};
 			this.dataMap.set(this.getIndexFromDate(record.day), record);
 		});
@@ -154,7 +154,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 export type DayRecord = {
 	day: Moment;
-	data: BehaviorSubject<Maybe<IWorkday>>;
+	data: BehaviorSubject<Maybe<Workday>>;
 };
 
 enum DayType {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IWorkdayTime } from '@shared/interfaces/workdayTime.interface';
 import mongoose, { HydratedDocument } from 'mongoose';
@@ -7,37 +8,37 @@ export type ContractDocument = HydratedDocument<Contract>;
 
 @Schema()
 export class Contract {
-    _id: string | mongoose.Types.ObjectId;
-    
-    @Prop({ required: true })
-    num: number;
+  _id: string | mongoose.Types.ObjectId;
 
-    @Prop({ required: true })
-    begin: Date;
+  @Prop({ required: true })
+  num: number;
 
-    @Prop({ required: true })
-    end: Date;
+  @Prop({ required: true })
+  begin: Date;
 
-    @Prop({ required: true })
-    weeklyTime: number;
+  @Prop({ required: true })
+  end: Date;
 
-    @Prop({ required: true })
-    timePerWeekday: [IWorkdayTime];
+  @Prop({ required: true })
+  weeklyTime: number;
 
-    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    supervisor?: User | string;
+  @Prop({ required: true })
+  timePerWeekday: [IWorkdayTime];
 
-    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    user: User | string;
+  @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  supervisor?: User | string;
 
-    // Function to calculate and set weeklyTime from time values in timePerWeekday
-    setWeeklyTime() : void {
-        let wklyTime: number = 0;
-        this.timePerWeekday.forEach((tpw) => {
-            wklyTime += tpw.time;
-        });
-        this.weeklyTime = wklyTime;
-    }
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User | string;
+
+  // Function to calculate and set weeklyTime from time values in timePerWeekday
+  setWeeklyTime(): void {
+    let wklyTime: number = 0;
+    this.timePerWeekday.forEach((tpw) => {
+      wklyTime += tpw.time;
+    });
+    this.weeklyTime = wklyTime;
+  }
 }
 
 export const ContractSchema = SchemaFactory.createForClass(Contract);

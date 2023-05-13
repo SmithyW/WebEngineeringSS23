@@ -6,7 +6,7 @@ import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.ser
 import * as moment from "moment";
 import { BehaviorSubject, Observer, Subscription } from "rxjs";
 import { Maybe } from "@shared/custom/types";
-import { IWorkday } from "@shared/models/workday.model";
+import { Workday } from "@shared/models/workday.model";
 
 @Component({
 	selector: "tr[app-day-row]",
@@ -59,12 +59,12 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		return date.format("DD.MM.YYYY");
 	}
 
-	private initFormValues(workday: IWorkday | undefined): void {
+	private initFormValues(workday: Workday | undefined): void {
 		if (workday) {
 			this.startForm.setValue(this.getTimeFromDate(workday.start));
 			this.endForm.setValue(this.getTimeFromDate(workday.end));
 			this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(workday.break)));
-			this.noteForm.setValue(workday.note);
+			this.noteForm.setValue(workday.note || '');
 		}
 		this.startForm.markAsUntouched();
 		this.endForm.markAsUntouched();

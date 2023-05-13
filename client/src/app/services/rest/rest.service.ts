@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IWorkday } from '@shared/models/workday.model';
+import { Workday } from '@shared/models/workday.model';
 import { Observable } from 'rxjs';
 import { Month } from '../utils/date-time-utils.service';
 
@@ -15,8 +15,8 @@ export class RestService {
     private httpClient: HttpClient
   ) { }
 
-  public fetchWorkdays(month: Month): Observable<IWorkday[]> {
+  public fetchWorkdays(month: Month): Observable<Workday[]> {
     const url = RestService.REST_WORKDAYS_URL.replace("{id}", "U.123").replace("{month}", "MAY");
-    return this.httpClient.get<IWorkday[]>(url);
+    return this.httpClient.get<Workday[]>(url);
   }
 }
