@@ -10,9 +10,12 @@ import { TimetrackerComponent } from './timetracker/timetracker.component';
 import { ContractsComponent } from './contracts/contracts.component';
 import { AccountDetailsComponent } from './account-details/account-details.component';
 import { NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCommonModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { DayRowComponent } from './timetracker/day-row/day-row.component';
+import { DisabledDayRowComponent } from './timetracker/disabled-day-row/disabled-day-row.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     NavComponent,
     TimetrackerComponent,
     ContractsComponent,
-    AccountDetailsComponent
+    AccountDetailsComponent,
+    DayRowComponent,
+    DisabledDayRowComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +38,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
     FormsModule,
+    ReactiveFormsModule,
   ]
 })
 export class UserPortalModule { }

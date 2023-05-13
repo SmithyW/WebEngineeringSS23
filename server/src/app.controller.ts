@@ -26,7 +26,7 @@ export class AppController {
         start: parse('2023-05-09 09:00', 'YYYY-MM-DD HH:mm'),
         end: parse('2023-05-09 12:00', 'YYYY-MM-DD HH:mm'),
         break: new TimeSpan(0, 0),
-        note: '-',
+        note: '2.5.: 9-12, 0 min Pause, 4 Std.',
         user: 'userId',
       },
       {
@@ -34,7 +34,7 @@ export class AppController {
         start: parse('2023-05-10 10:15', 'YYYY-MM-DD HH:mm'),
         end: parse('2023-05-10 15:45', 'YYYY-MM-DD HH:mm'),
         break: new TimeSpan(1, 30),
-        note: '-',
+        note: '3.5.: 10:15-15:45, 1h30m Pause, 4 Std.',
         user: 'userId',
       },
     ];

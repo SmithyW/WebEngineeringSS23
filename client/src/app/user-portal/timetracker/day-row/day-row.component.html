@@ -1,0 +1,27 @@
+<ng-container *ngIf="dayRecord !== undefined">
+    <td class="align-middle d-none d-lg-table-cell">{{getWeekday(dayRecord.day)}}</td>
+    <td class="fs-6 align-middle">{{formatDate(dayRecord.day)}}</td>
+    <td>
+        <div class="">
+            <input type="time" class="form-control text-center" [formControl]="startForm">
+        </div>
+    </td>
+    <td>
+        <div class="">
+            <input type="time" class="form-control text-center" [formControl]="endForm">
+        </div>
+    </td>
+    <td>
+        <div class="">
+            <input type="time" class="form-control text-center" [formControl]="breakForm">
+        </div>
+    </td>
+    <td class="fs-6 align-middle text-center">{{workingTime}}</td>
+    <td class="fs-6 align-middle text-center d-none d-lg-table-cell"></td>
+    <td class="fs-6 align-middle text-center d-none d-sm-table-cell"></td>
+    <td class="d-none d-md-table-cell">
+        <div class="">
+            <input class="form-control" [formControl]="noteForm">
+        </div>
+    </td>
+</ng-container>

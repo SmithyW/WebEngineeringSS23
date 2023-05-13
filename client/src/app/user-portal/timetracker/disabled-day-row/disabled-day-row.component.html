@@ -1,0 +1,13 @@
+<ng-container *ngIf="dayRecord !== undefined">
+    <td class="align-middle d-none d-lg-table-cell">{{getWeekday(dayRecord.day)}}</td>
+    <td class="fs-6 align-middle">{{formatDate(dayRecord.day)}}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class="d-none d-lg-table-cell"></td>
+    <td class="d-none d-sm-table-cell"></td>
+    <td class="d-none d-md-table-cell">
+        <div class="fs-6">{{note}}</div>
+    </td>
+</ng-container>
