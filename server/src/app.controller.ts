@@ -1,9 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { TimeSpan } from '@shared/custom/timeSpan';
 import { parse } from 'date-and-time';
 import { Workday } from '@shared/models/workday.model';
 import mongoose from 'mongoose';
+import { MonthYear } from '@shared/custom/types';
 
 @Controller()
 export class AppController {
@@ -14,10 +15,10 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('user/:id/timetracking/:month')
+  @Post('user/:id/timetracking/workdays')
   getWorkdaysForMonth(
-    @Param('id') userId: string,
-    @Param('month') month: string,
+    @Body() data: MonthYear,
+    @Param('id') id: string,
   ): Workday[] {
     console.warn('TODO: implement getWorkdaysForMonth');
     return [

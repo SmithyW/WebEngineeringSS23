@@ -31,6 +31,17 @@ export class Contract {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   user: User | string;
 
+  constructor(values: Contract) {
+    this._id = values._id;
+    this.num = values.num;
+    this.begin = values.begin;
+    this.end = values.end;
+    this.weeklyTime = values.weeklyTime;
+    this.timePerWeekday = values.timePerWeekday;
+    this.supervisor = values.supervisor;
+    this.user = values.user;
+  }
+
   // Function to calculate and set weeklyTime from time values in timePerWeekday
   setWeeklyTime(): void {
     let wklyTime: number = 0;
