@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Workday, WorkdayDocument } from '@shared/models/workday.model';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class WorkdayService {
-  create(createWorkdayDto: CreateWorkdayDto) {
-    return 'This action adds a new workday';
+
+  constructor(@InjectModel(Workday.name) private workdayModel: Model<Workday>) {}
+
+  create(createWorkdayDto: CreateWorkdayDto): Promise<Workday> {
+    const createdWorkday: WorkdayDocument = new this.workdayModel(createWorkdayDto);
+    return createdWorkday.save();
   }
 
-  findAll() {
-    return `This action returns all workday`;
+  findAll(): Promise<Workday[]> {
+    return this.workdayModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} workday`;
+  findOne(id: string): Promise<Workday> {
+    return this.workdayModel.findOne({ _id: id }).exec();
   }
 
-  update(id: number, updateWorkdayDto: UpdateWorkdayDto) {
-    return `This action updates a #${id} workday`;
+  update(id: string, updateWorkdayDto: UpdateWorkdayDto): Promise<Workday> {
+    const updatedWorkday = new this.workdayModel(updateWorkdayDto);
+    return this.workdayModel.findOneAndUpdate({ _id: id }, updateWorkdayDto, { new: true }).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} workday`;
+  remove(id: string): Promise<any> {
+    return this.workdayModel.deleteOne({ _id: id }).exec();
   }
 }

@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { response } from 'express';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 import { User } from '@shared/models/user.model';
 
