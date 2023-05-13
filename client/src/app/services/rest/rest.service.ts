@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Workday } from '@shared/models/workday.model';
 import { Observable } from 'rxjs';
-import { Month } from '../utils/date-time-utils.service';
+import { Month } from '@shared/enums/month.enum';
 
 @Injectable({
   providedIn: 'root'

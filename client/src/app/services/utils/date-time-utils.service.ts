@@ -6,6 +6,7 @@ import { extendMoment } from 'moment-range';
 import * as dateAndTime from 'date-and-time';
 import * as _moment from 'moment-feiertage';
 import * as moment from 'moment';
+import { Month } from '@shared/enums/month.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -120,20 +121,5 @@ export class DateTimeUtilsService {
   }
 }
 
-export enum Month {
-  JANUARY = 0,
-  FEBRUARY = 1,
-  MARCH = 2,
-  APRIL = 3,
-  MAY = 4,
-  JUNE = 5,
-  JULY = 6,
-  AUGUST = 7,
-  SEPTEMBER = 8,
-  OCTOBER = 9,
-  NOVEMBER = 10,
-  DECEMBER = 11,
-}
-
-export const AVAILABLE_REGIONS = (<T extends string[]>(...o: T)=> o)('BW','BY','BE','BB','HB','HH','HE','MV','NI','NW','RP','SL','SN','ST','SH','TH');
+const AVAILABLE_REGIONS = (<T extends string[]>(...o: T)=> o)('BW','BY','BE','BB','HB','HH','HE','MV','NI','NW','RP','SL','SN','ST','SH','TH');
 export type GermanState = typeof AVAILABLE_REGIONS[number];

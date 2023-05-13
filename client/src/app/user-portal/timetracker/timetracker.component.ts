@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Moment } from "moment";
-import { DateTimeUtilsService, Month } from "src/app/services/utils/date-time-utils.service";
+import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
 import { Workday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -8,6 +8,7 @@ import * as moment from "moment";
 import { Maybe } from "@shared/custom/types";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { AbstractControl } from "@angular/forms";
+import { Month } from '@shared/enums/month.enum';
 
 moment.locale("de");
 
