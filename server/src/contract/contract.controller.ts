@@ -5,7 +5,7 @@ import { UpdateContractDto } from './dto/update-contract.dto';
 import { Contract } from '@shared/models/contract.model';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 
-@Controller('contract')
+@Controller('contracts')
 export class ContractController {
   constructor(private readonly contractService: ContractService) {}
 
@@ -58,14 +58,14 @@ export class ContractController {
   );
   }
 
-  @Get(':id')
+  @Get(':contractId')
   @HttpCode(HttpStatus.OK)
   findOne(
-    @Param('id') id: string, 
+    @Param('contractId') contractId: string, 
     @Res() response
     ): Promise<IBaseResponse<Contract | any>> {
 
-    return this.contractService.findOne(id).then((contract: Contract) => {
+    return this.contractService.findOne(contractId).then((contract: Contract) => {
       const res: IBaseResponse<Contract> = {
         success: true,
         message: 'Contract found',
@@ -83,15 +83,15 @@ export class ContractController {
     });
   }
 
-  @Patch(':id')
+  @Patch(':contractId')
   @HttpCode(HttpStatus.OK)
   update(
-    @Param('id') id: string,
+    @Param('contractId') contractId: string,
     @Res() response,
     @Body() updateContractDto: UpdateContractDto
     ): Promise<IBaseResponse<Contract | any>> {
 
-    return this.contractService.update(id, updateContractDto).then((contract: Contract) => {
+    return this.contractService.update(contractId, updateContractDto).then((contract: Contract) => {
       const res: IBaseResponse<Contract> = {
         success: true,
         message: 'Contract updated',
@@ -110,13 +110,13 @@ export class ContractController {
     );
   }
 
-  @Delete(':id')
+  @Delete(':contractId')
   @HttpCode(HttpStatus.OK)
   remove(
-    @Param('id') id: string,
+    @Param('contractId') contractId: string,
     @Res() response
     ): Promise<IBaseResponse<any>> {
-    return this.contractService.remove(id).then(() => {
+    return this.contractService.remove(contractId).then(() => {
       
       const res: IBaseResponse<any> = {
         success: true,
