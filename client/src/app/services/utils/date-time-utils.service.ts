@@ -14,6 +14,17 @@ export class DateTimeUtilsService {
 
   readonly moment = extendMoment(_moment);
 
+  private language: string = "de";
+
+  constructor() {
+    moment.locale(this.language);
+  }
+
+  public setLanguage(language: string): void {
+    this.language = language;
+    moment.locale(this.language);
+  }
+
   public getCurrentMonth(): Month {
     const m = dateUtils.getMonth(new Date());
     return this.getMonth(m);
@@ -26,6 +37,14 @@ export class DateTimeUtilsService {
     const monthRange = this.moment.rangeFromInterval('day', days, monthStart);
     return Array.from(monthRange.by('day', {excludeEnd: true, step: 1}));
   }
+
+  public getMounthName(month: Month, short: boolean = false): string {
+    let format = "MMMM";
+    if (short){
+      format = "MMM";
+    }
+    return moment({month: month}).format(format);
+	}
 
   public timespanToDate(span: TimeSpan): Date {
     return _moment({

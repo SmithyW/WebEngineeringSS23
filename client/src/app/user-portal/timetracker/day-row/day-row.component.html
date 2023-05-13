@@ -1,5 +1,5 @@
 <ng-container *ngIf="dayRecord !== undefined">
-    <td class="align-middle">{{getWeekday(dayRecord.day)}}</td>
+    <td class="align-middle d-none d-lg-table-cell">{{getWeekday(dayRecord.day)}}</td>
     <td class="fs-6 align-middle">{{formatDate(dayRecord.day)}}</td>
     <td>
         <div class="">
@@ -17,9 +17,9 @@
         </div>
     </td>
     <td class="fs-6 align-middle text-center">{{workingTime}}</td>
-    <td class="fs-6 align-middle text-center"></td>
-    <td class="fs-6 align-middle text-center"></td>
-    <td>
+    <td class="fs-6 align-middle text-center d-none d-lg-table-cell"></td>
+    <td class="fs-6 align-middle text-center d-none d-sm-table-cell"></td>
+    <td class="d-none d-md-table-cell">
         <div class="">
             <input class="form-control" [formControl]="noteForm">
         </div>

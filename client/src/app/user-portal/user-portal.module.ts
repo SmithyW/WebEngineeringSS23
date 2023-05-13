@@ -15,6 +15,7 @@ import { MatCommonModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DayRowComponent } from './timetracker/day-row/day-row.component';
 import { DisabledDayRowComponent } from './timetracker/disabled-day-row/disabled-day-row.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [

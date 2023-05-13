@@ -6,7 +6,7 @@ import { RestService } from "src/app/services/rest/rest.service";
 import { BehaviorSubject, Subscription } from "rxjs";
 import * as moment from "moment";
 import { Maybe } from "@shared/custom/types";
-import { FormArray } from "@angular/forms";
+import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { AbstractControl } from "@angular/forms";
 
 moment.locale("de");
@@ -23,25 +23,38 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	data: DayRecord[] = [];
 	forms: FormArray<AbstractControl> = new FormArray<AbstractControl>([]);
+	dateForm: FormGroup | undefined;
+	currentMonth: Month;
+	currentYear: number;
+	yearSelect: number;
+	
+	readonly months = Month;
+
 	private dataMap: Map<number, DayRecord> = new Map();
 
 	private dates: Moment[] = [];
-	private currentMonth: Month;
-	private currentYear: number;
 	private subscriptions = new Subscription();
 
 	constructor(private dateTimeUtil: DateTimeUtilsService, private rest: RestService) {
 		this.currentMonth = this.dateTimeUtil.getCurrentMonth();
 		this.currentYear = new Date().getFullYear();
+		this.yearSelect = this.currentYear;
 	}
 
 	ngOnInit(): void {
 		this.setMonth();
 		this.fetchWorkdays();
+		this.dateForm = new FormGroup({
+			CalMonth: new FormControl(moment()),
+		  }); 
 	}
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
+	}
+
+	getMounthName(month: Month): string {
+		return this.dateTimeUtil.getMounthName(month, true);
 	}
 
 	getDayType(day: Moment): DayType {
@@ -61,18 +74,44 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	addRowForm(form: FormArray): void {
 		this.forms.push(form);
 	}
-	
+
 	save() {
-		console.warn("TODO: save")
+		console.warn("TODO: save");
 	}
 
 	sign() {
-		console.warn("TODO: sign")
+		console.warn("TODO: sign");
 	}
 
 	isMonthCompleted(): boolean {
 		console.warn("TODO: sign vor Monatsende, wenn Vertragsende früher");
-		return this.dates[this.dates.length-1].isBefore(moment.now());
+		return this.dates[this.dates.length - 1].isBefore(moment.now());
+	}
+
+	decrementYearSelect(): void {
+		this.yearSelect -= 1;
+	}
+
+	incrementYearSelect(): void {
+		this.yearSelect += 1;
+	}
+
+	isMonthValid(month: Month): boolean {
+		const now = new Date();
+		if (this.yearSelect < now.getFullYear()) {
+			return true;
+		}
+		if (this.yearSelect > now.getFullYear()) {
+			return false;
+		}
+		return month <= this.dateTimeUtil.getCurrentMonth();
+	}
+
+	selectMonth(month: Month): void {
+		this.currentYear = this.yearSelect;
+		this.currentMonth = month;
+		this.setMonth(month, this.currentYear);
+		this.fetchWorkdays();
 	}
 
 	private fetchWorkdays(): void {
@@ -87,13 +126,13 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 			},
 			error: (err) => {
 				console.error("Error while fetching workdays", err);
-			}
+			},
 		});
 		this.subscriptions.add(workdaySubscription);
 	}
 
-	private setMonth(): void {
-		this.dates = this.dateTimeUtil.getDaysInMonth(this.currentMonth, this.currentYear);
+	private setMonth(month: Month = this.currentMonth, year: number = this.currentYear): void {
+		this.dates = this.dateTimeUtil.getDaysInMonth(month, year);
 		this.data = [];
 		this.dataMap.clear();
 		this.dates.forEach((day) => {
@@ -114,9 +153,9 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 }
 
 export type DayRecord = {
-	day: Moment,
-	data: BehaviorSubject<Maybe<IWorkday>>
-}
+	day: Moment;
+	data: BehaviorSubject<Maybe<IWorkday>>;
+};
 
 enum DayType {
 	WORKDAY,
