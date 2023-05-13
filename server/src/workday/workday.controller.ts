@@ -59,13 +59,13 @@ export class WorkdayController {
   );
   }
 
-  @Get(':wdId')
+  @Get(':workdayId')
   @HttpCode(HttpStatus.OK)
   findOne(
-    @Param('wdId') wdId: string,
+    @Param('workdayId') workdayId: string,
     @Res() response
     ): Promise<IBaseResponse<Workday | any>> {
-      return this.workdayService.findOne(wdId).then((workday: Workday) => {
+      return this.workdayService.findOne(workdayId).then((workday: Workday) => {
         const res: IBaseResponse<Workday> = {
           success: true,
           message: 'Workday found',
@@ -84,14 +84,14 @@ export class WorkdayController {
     );
   }
 
-  @Patch(':wdId')
+  @Patch(':workdayId')
   @HttpCode(HttpStatus.OK)
   update(
-    @Param('wdId') wdId: string,
+    @Param('workdayId') workdayId: string,
     @Body() updateWorkdayDto: UpdateWorkdayDto,
     @Res() response
     ): Promise<IBaseResponse<Workday | any>> {
-      return this.workdayService.update(wdId, updateWorkdayDto).then((workday: Workday) => {
+      return this.workdayService.update(workdayId, updateWorkdayDto).then((workday: Workday) => {
         const res: IBaseResponse<Workday> = {
           success: true,
           message: 'Workday updated',
@@ -110,13 +110,13 @@ export class WorkdayController {
     );
   }
 
-  @Delete(':wdId')
+  @Delete(':workdayId')
   @HttpCode(HttpStatus.OK)
   remove(
-    @Param('wdId') wdId: string,
+    @Param('workdayId') workdayId: string,
     @Res() response
     ): Promise<IBaseResponse<any>> {
-      return this.workdayService.remove(wdId).then(() => {
+      return this.workdayService.remove(workdayId).then(() => {
         const res: IBaseResponse<any> = {
           success: true,
           message: 'Workday deleted',
