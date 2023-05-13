@@ -5,7 +5,7 @@ import { UpdateWorkdayDto } from './dto/update-workday.dto';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 import { Workday } from '@shared/models/workday.model';
 
-@Controller('workdays')
+@Controller(['workdays', 'users/:userId/workdays'])
 export class WorkdayController {
   constructor(private readonly workdayService: WorkdayService) {}
 
@@ -38,8 +38,10 @@ export class WorkdayController {
   @Get()
   @HttpCode(HttpStatus.OK)
   findAll(
+    @Param('userId') userId: string,
     @Res() response
   ): Promise<IBaseResponse<Workday[] | any>> {
+    console.log(userId);
     return this.workdayService.findAll().then((workdays: Workday[]) => {
       const res: IBaseResponse<Workday[]> = {
         success: true,
