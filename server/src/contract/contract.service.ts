@@ -10,27 +10,27 @@ export class ContractService {
 
   constructor(@InjectModel(Contract.name) private contractModel: Model<Contract>) {}
 
-  async create(createContractDto: CreateContractDto): Promise<Contract> {
+  create(createContractDto: CreateContractDto): Promise<Contract> {
     const createdContract: ContractDocument = new this.contractModel(createContractDto);
     createdContract.setWeeklyTime();
     return createdContract.save();
   }
 
-  async findAll(): Promise<Contract[]> {
+  findAll(): Promise<Contract[]> {
     return this.contractModel.find()
       .populate('user')
       .populate('supervisor')
       .exec();
   }
 
-  async findOne(id: string): Promise<Contract> {
+  findOne(id: string): Promise<Contract> {
     return this.contractModel.findOne({ _id: id })
       .populate('user')
       .populate('supervisor')
       .exec();
   }
 
-  async update(id: string, updateContractDto: UpdateContractDto): Promise<Contract> {
+  update(id: string, updateContractDto: UpdateContractDto): Promise<Contract> {
     const updatedContract = new this.contractModel(updateContractDto);
     updatedContract.setWeeklyTime();
     return this.contractModel.findOneAndUpdate({ _id: id }, updateContractDto, { new: true })
@@ -39,7 +39,7 @@ export class ContractService {
       .exec();
   }
 
-  async remove(id: string): Promise<any> {
+  remove(id: string): Promise<any> {
     return this.contractModel.deleteOne({ _id: id }).exec();
   }
 }
