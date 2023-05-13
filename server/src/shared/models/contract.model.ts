@@ -23,7 +23,7 @@ export class Contract {
   weeklyTime: number;
 
   @Prop({ required: true })
-  timePerWeekday: [IWorkdayTime];
+  timePerWeekday: IWorkdayTime[];
 
   @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   supervisor?: User | string;
