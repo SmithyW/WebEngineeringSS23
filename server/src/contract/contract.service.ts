@@ -16,8 +16,8 @@ export class ContractService {
     return createdContract.save();
   }
 
-  findAll(): Promise<Contract[]> {
-    return this.contractModel.find()
+  findAll(filter: any): Promise<Contract[]> {
+    return this.contractModel.find(filter)
       .populate('user')
       .populate('supervisor')
       .exec();
