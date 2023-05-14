@@ -12,9 +12,13 @@ export class WorkdayController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
+    @Param('userId') userId: string,
     @Body() createWorkdayDto: CreateWorkdayDto,
     @Res() response
     ): Promise<IBaseResponse<Workday | any>> {
+      if (userId) {
+        createWorkdayDto.user = userId;
+      }
       return this.workdayService.create(createWorkdayDto).then((workday: Workday) => {
           const res: IBaseResponse<Workday> = {
             success: true,
