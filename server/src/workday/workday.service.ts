@@ -16,11 +16,11 @@ export class WorkdayService {
   }
 
   findAll(filter: any): Promise<Workday[]> {
-    return this.workdayModel.find(filter).exec();
+    return this.workdayModel.find(filter).populate('user').exec();
   }
 
   findOne(id: string): Promise<Workday> {
-    return this.workdayModel.findOne({ _id: id }).exec();
+    return this.workdayModel.findOne({ _id: id }).populate('user').exec();
   }
 
   update(id: string, updateWorkdayDto: UpdateWorkdayDto): Promise<Workday> {
