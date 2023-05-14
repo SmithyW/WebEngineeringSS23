@@ -41,8 +41,11 @@ export class WorkdayController {
     @Param('userId') userId: string,
     @Res() response
   ): Promise<IBaseResponse<Workday[] | any>> {
-    console.log(userId);
-    return this.workdayService.findAll().then((workdays: Workday[]) => {
+    let filter = {};
+    if (userId) {
+      filter = { user: userId };
+    }
+    return this.workdayService.findAll(filter).then((workdays: Workday[]) => {
       const res: IBaseResponse<Workday[]> = {
         success: true,
         message: 'Workdays found',

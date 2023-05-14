@@ -15,8 +15,8 @@ export class WorkdayService {
     return createdWorkday.save();
   }
 
-  findAll(): Promise<Workday[]> {
-    return this.workdayModel.find().exec();
+  findAll(filter: any): Promise<Workday[]> {
+    return this.workdayModel.find(filter).exec();
   }
 
   findOne(id: string): Promise<Workday> {
@@ -25,7 +25,7 @@ export class WorkdayService {
 
   update(id: string, updateWorkdayDto: UpdateWorkdayDto): Promise<Workday> {
     const updatedWorkday = new this.workdayModel(updateWorkdayDto);
-    return this.workdayModel.findOneAndUpdate({ _id: id }, updateWorkdayDto, { new: true }).exec();
+    return this.workdayModel.findOneAndUpdate({ _id: id }, updatedWorkday, { new: true }).exec();
   }
 
   remove(id: string): Promise<any> {

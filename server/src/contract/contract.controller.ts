@@ -5,7 +5,7 @@ import { UpdateContractDto } from './dto/update-contract.dto';
 import { Contract } from '@shared/models/contract.model';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 
-@Controller('contracts')
+@Controller(['contracts', 'users/:userId/contracts'])
 export class ContractController {
   constructor(private readonly contractService: ContractService) {}
 
@@ -38,8 +38,14 @@ export class ContractController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(@Res() response): Promise<IBaseResponse<Contract[] | any>> {
-    return this.contractService.findAll().then((contracts: Contract[]) => {
+  findAll(
+    @Param('userId') userId: string,
+    @Res() response): Promise<IBaseResponse<Contract[] | any>> {
+    let filter = {};
+    if (userId) {
+      filter = { user: userId };
+    }
+    return this.contractService.findAll(filter).then((contracts: Contract[]) => {
       const res: IBaseResponse<Contract[]> = {
         success: true,
         message: 'Contracts found',
