@@ -33,7 +33,7 @@ export class ContractService {
   update(id: string, updateContractDto: UpdateContractDto): Promise<Contract> {
     const updatedContract = new this.contractModel(updateContractDto);
     updatedContract.setWeeklyTime();
-    return this.contractModel.findOneAndUpdate({ _id: id }, updateContractDto, { new: true })
+    return this.contractModel.findOneAndUpdate({ _id: id }, updatedContract, { new: true })
       .populate('user')
       .populate('supervisor')
       .exec();
