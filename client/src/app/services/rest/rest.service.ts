@@ -26,20 +26,20 @@ export class RestService {
       throw new Error('A user must be logged in!');
     }
 
-    const url = paths.REST_WORKDAYS_URL.resolve(user._id.toString());
-    const postData = paths.REST_WORKDAYS_URL.postData(month, year);
+    const url = paths.REST_FETCH_WORKDAYS_URL.resolve(user._id.toString());
+    const postData = paths.REST_FETCH_WORKDAYS_URL.postData(month, year);
     return this.httpClient.post<Workday[]>(url, postData);
   }
 
-  public fetchContract(month: Month, year: number): Observable<Contract[]> {
+  public fetchContract(month: Month, year: number): Observable<Contract> {
     const user = this.authServcie.getUser();
     if (!user?._id){
       throw new Error('A user must be logged in!');
     }
 
-    const url = paths.REST_CONTRACT_URL.resolve(user._id.toString());
-    const postData = paths.REST_WORKDAYS_URL.postData(month, year);
-    return this.httpClient.post<Contract[]>(url, postData);
+    const url = paths.REST_FETCH_CONTRACT_URL.resolve(user._id.toString());
+    const postData = paths.REST_FETCH_CONTRACT_URL.postData(month, year);
+    return this.httpClient.post<Contract>(url, postData);
   }
 
 }

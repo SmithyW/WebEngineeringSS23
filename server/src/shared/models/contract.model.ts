@@ -31,15 +31,24 @@ export class Contract {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   user: User | string;
 
-  constructor(values: Contract) {
-    this._id = values._id;
-    this.num = values.num;
-    this.begin = values.begin;
-    this.end = values.end;
-    this.weeklyTime = values.weeklyTime;
-    this.timePerWeekday = values.timePerWeekday;
-    this.supervisor = values.supervisor;
-    this.user = values.user;
+  constructor(
+    _id: string | mongoose.Types.ObjectId,
+    num: number,
+    begin: Date,
+    end: Date,
+    weeklyTime: number,
+    timePerWeekday: [IWorkdayTime],
+    user: User | string,
+    supervisor: User | string | undefined = undefined,
+  ) {
+    this._id = _id;
+    this.num = num;
+    this.begin = begin;
+    this.end = end;
+    this.weeklyTime = weeklyTime;
+    this.timePerWeekday = timePerWeekday;
+    this.supervisor = supervisor;
+    this.user = user;
   }
 
   // Function to calculate and set weeklyTime from time values in timePerWeekday
