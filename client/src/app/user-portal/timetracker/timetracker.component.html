@@ -1,46 +1,67 @@
-<div class="container-fluid py-4 px-3">
-
-  <div ngbDropdown class="dropdown">
-    <button ngbDropdownToggle class="btn btn-primary" type="button" id="dropdownBtnMounth" aria-expanded="false">
-      {{getMounthName(currentMonth) + " " + currentYear}}
-    </button>
-    <div ngbDropdownMenu aria-labelledby="dropdownMenuButton1">
-      <div class="">
-        <div class="d-flex flex-row justify-content-center align-items-center mt-1">
-          <button class="btn rounded-circle btn-outline-secondary border-0 mx-2"
-            (click)="decrementYearSelect()">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <div>{{yearSelect}}</div>
-          <button class="btn rounded-circle btn-outline-secondary border-0 mx-2"
-            (click)="incrementYearSelect()">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
-        <div class="d-flex flex-row px-2 pt-1">
-          <div class="d-flex flex-column align-items-center">
-            <ng-container *ngFor="let month of [months.JANUARY, months.APRIL, months.JULY, months.OCTOBER]">
-              <button class="btn rounded-2 btn-outline-secondary border-0 p-2" aria-label="Past Year"
-                [disabled]="!isMonthValid(month)" (click)="selectMonth(month)">
-                {{getMounthName(month)}}
+<div class="container-fluid p-4">
+  <div class="d-inline-flex flex-wrap">
+    <div class="me-4">
+      <table class="table table-responsive">
+        <thead class="bg-secondary text-light">
+          <tr>
+            <th scope="col">Monat</th>
+            <th scope="col">Arbeitszeit Ist</th>
+            <th scope="col">Arbeitszeit Soll</th>
+            <th scope="col">Mehr-/ Minderstunden</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{getMonthName(currentMonth, false) + " " + currentYear}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="">
+      <div ngbDropdown class="dropdown">
+        <button ngbDropdownToggle class="btn btn-primary" type="button" id="dropdownBtnMounth" aria-expanded="false">
+          {{getMonthName(currentMonth) + " " + currentYear}}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownMenuButton1">
+          <div class="">
+            <div class="d-flex flex-row justify-content-center align-items-center mt-1">
+              <button class="btn rounded-circle btn-outline-secondary border-0 mx-2" (click)="decrementYearSelect()">
+                <i class="bi bi-chevron-left"></i>
               </button>
-            </ng-container>
-          </div>
-          <div class="d-flex flex-column align-items-center">
-            <ng-container *ngFor="let month of [months.FEBRUARY, months.MAY, months.AUGUST, months.NOVEMBER]">
-              <button class="btn rounded-2 btn-outline-secondary border-0 p-2" aria-label="Past Year"
-                [disabled]="!isMonthValid(month)" (click)="selectMonth(month)">
-                {{getMounthName(month)}}
+              <div>{{yearSelect}}</div>
+              <button class="btn rounded-circle btn-outline-secondary border-0 mx-2" (click)="incrementYearSelect()">
+                <i class="bi bi-chevron-right"></i>
               </button>
-            </ng-container>
-          </div>
-          <div class="d-flex flex-column align-items-center">
-            <ng-container *ngFor="let month of [months.MARCH, months.JUNE, months.SEPTEMBER, months.DECEMBER]">
-              <button class="btn rounded-2 btn-outline-secondary border-0 p-2" aria-label="Past Year"
-                [disabled]="!isMonthValid(month)" (click)="selectMonth(month)">
-                {{getMounthName(month)}}
-              </button>
-            </ng-container>
+            </div>
+            <div class="d-flex flex-row px-2 pt-1">
+              <div class="d-flex flex-column align-items-center">
+                <ng-container *ngFor="let month of [months.JANUARY, months.APRIL, months.JULY, months.OCTOBER]">
+                  <button class="btn rounded-2 btn-outline-secondary border-0 p-2" aria-label="Past Year"
+                    [disabled]="!isMonthValid(month)" (click)="selectMonth(month)">
+                    {{getMonthName(month)}}
+                  </button>
+                </ng-container>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <ng-container *ngFor="let month of [months.FEBRUARY, months.MAY, months.AUGUST, months.NOVEMBER]">
+                  <button class="btn rounded-2 btn-outline-secondary border-0 p-2" aria-label="Past Year"
+                    [disabled]="!isMonthValid(month)" (click)="selectMonth(month)">
+                    {{getMonthName(month)}}
+                  </button>
+                </ng-container>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <ng-container *ngFor="let month of [months.MARCH, months.JUNE, months.SEPTEMBER, months.DECEMBER]">
+                  <button class="btn rounded-2 btn-outline-secondary border-0 p-2" aria-label="Past Year"
+                    [disabled]="!isMonthValid(month)" (click)="selectMonth(month)">
+                    {{getMonthName(month)}}
+                  </button>
+                </ng-container>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -53,13 +74,13 @@
         <tr>
           <th colspan="2" scope="col" class="d-none d-lg-table-cell">Datum</th>
           <th colspan="1" scope="col" class="d-table-cell d-lg-none">Datum</th>
-          <th scope="col">Arbeitsbeginn</th>
-          <th scope="col">Arbeitsende</th>
-          <th scope="col">Dauer Pausen</th>
-          <th scope="col">Erfasste Arbeitszeit</th>
-          <th scope="col" class="d-none d-lg-table-cell">Geplante Arbeitszeit</th>
-          <th scope="col" class="d-none d-sm-table-cell">Mehr-/ Minderstunden</th>
-          <th scope="col" class="d-none d-md-table-cell">Bemerkungen</th>
+          <th scope="col" class="text-center">Arbeitsbeginn</th>
+          <th scope="col" class="text-center">Arbeitsende</th>
+          <th scope="col" class="text-center">Dauer Pausen</th>
+          <th scope="col" class="text-center">Erfasste Arbeitszeit</th>
+          <th scope="col" class="d-none d-lg-table-cell text-center">Geplante Arbeitszeit</th>
+          <th scope="col" class="d-none d-sm-table-cell text-center">Mehr-/ Minderstunden</th>
+          <th scope="col" class="d-none d-md-table-cell text-center">Bemerkungen</th>
         </tr>
       </thead>
       <tbody>

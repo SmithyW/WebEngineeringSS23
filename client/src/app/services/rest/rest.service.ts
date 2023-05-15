@@ -31,7 +31,7 @@ export class RestService {
     return this.httpClient.post<Workday[]>(url, postData);
   }
 
-  public fetchContract(month: Month, year: number): Observable<Contract[]> {
+  public fetchContract(month: Month, year: number): Observable<Contract> {
     const user = this.authServcie.getUser();
     if (!user?._id){
       throw new Error('A user must be logged in!');
@@ -39,7 +39,7 @@ export class RestService {
 
     const url = paths.REST_CONTRACT_URL.resolve(user._id.toString());
     const postData = paths.REST_WORKDAYS_URL.postData(month, year);
-    return this.httpClient.post<Contract[]>(url, postData);
+    return this.httpClient.post<Contract>(url, postData);
   }
 
 }

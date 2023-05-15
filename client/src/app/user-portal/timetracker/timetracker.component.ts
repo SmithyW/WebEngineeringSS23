@@ -5,10 +5,11 @@ import { Workday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
 import { BehaviorSubject, Subscription } from "rxjs";
 import * as moment from "moment";
-import { Maybe } from "@shared/custom/types";
+import { ContractData, Maybe } from "@shared/custom/types";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { AbstractControl } from "@angular/forms";
-import { Month } from '@shared/enums/month.enum';
+import { Month } from "@shared/enums/month.enum";
+import { Contract } from "@shared/models/contract.model";
 
 moment.locale("de");
 
@@ -28,11 +29,22 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	currentMonth: Month;
 	currentYear: number;
 	yearSelect: number;
-	
+	contract: Maybe<ContractData> = {
+		_id: "",
+		begin: new Date(2023, 3, 1),
+		end: new Date(2023, 6, 15),
+		num: 1,
+		timePerWeekday: [{
+			time: 4,
+			weekday: 2
+		}],
+		user: 'userId',
+		weeklyTime: 10,
+	};
+
 	readonly months = Month;
 
 	private dataMap: Map<number, DayRecord> = new Map();
-
 	private dates: Moment[] = [];
 	private subscriptions = new Subscription();
 
@@ -47,15 +59,15 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.fetchWorkdays();
 		this.dateForm = new FormGroup({
 			CalMonth: new FormControl(moment()),
-		  }); 
+		});
 	}
 
 	ngOnDestroy(): void {
 		this.subscriptions.unsubscribe();
 	}
 
-	getMounthName(month: Month): string {
-		return this.dateTimeUtil.getMounthName(month, true);
+	getMonthName(month: Month, short = true): string {
+		return this.dateTimeUtil.getMounthName(month, short);
 	}
 
 	getDayType(day: Moment): DayType {
@@ -116,7 +128,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	private fetchWorkdays(): void {
-		const workdaySubscription = this.rest.fetchWorkdays(Month.MAY).subscribe({
+		const workdaySubscription = this.rest.fetchWorkdays(this.currentMonth, this.currentYear).subscribe({
 			next: (workdaysData) => {
 				workdaysData.forEach((workday) => {
 					const dayRecord = this.dataMap.get(this.getIndexFromDate(moment(workday.start)));
@@ -144,6 +156,19 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 			this.dataMap.set(this.getIndexFromDate(record.day), record);
 		});
 		this.data = Array.from(this.dataMap.values());
+		this.fetchContract();
+	}
+
+	private fetchContract(): void {
+		const contractSubscription = this.rest.fetchContract(this.currentMonth, this.currentYear).subscribe({
+			next: (contractData) => {
+				this.contract = contractData;
+			},
+			error: (err) => {
+				console.error("Error while fetching contract", err);
+			},
+		});
+		this.subscriptions.add(contractSubscription);
 	}
 
 	private getIndexFromDate(date: Moment): number {
