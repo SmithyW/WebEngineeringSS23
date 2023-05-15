@@ -3,13 +3,14 @@ import { Moment } from "moment";
 import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
 import { Workday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, Subscription, windowTime } from "rxjs";
 import * as moment from "moment";
 import { ContractData, Maybe } from "@shared/custom/types";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { AbstractControl } from "@angular/forms";
 import { Month } from "@shared/enums/month.enum";
 import { Contract } from "@shared/models/contract.model";
+import { KeyValue } from "@angular/common";
 
 moment.locale("de");
 
@@ -34,17 +35,21 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		begin: new Date(2023, 3, 1),
 		end: new Date(2023, 6, 15),
 		num: 1,
-		timePerWeekday: [{
-			time: 4,
-			weekday: 2
-		}],
-		user: 'userId',
+		timePerWeekday: [
+			{
+				time: 4,
+				weekday: 2,
+			},
+		],
+		user: "userId",
 		weeklyTime: 10,
 	};
+	monthSum: string = '';
 
 	readonly months = Month;
 
 	private dataMap: Map<number, DayRecord> = new Map();
+	private timeMap: Map<Moment, moment.Duration> = new Map();
 	private dates: Moment[] = [];
 	private subscriptions = new Subscription();
 
@@ -60,6 +65,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.dateForm = new FormGroup({
 			CalMonth: new FormControl(moment()),
 		});
+		this.monthSum = this.calculateMonthSum();
 	}
 
 	ngOnDestroy(): void {
@@ -86,6 +92,11 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	addRowForm(form: FormArray): void {
 		this.forms.push(form);
+	}
+
+	updateTime(timeRecord: KeyValue<Moment, moment.Duration>) {
+		this.timeMap.set(timeRecord.key, timeRecord.value);
+		this.monthSum = this.calculateMonthSum();
 	}
 
 	save() {
@@ -127,6 +138,19 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.fetchWorkdays();
 	}
 
+	private calculateMonthSum(): string {
+		let timeSum: moment.Duration = moment.duration(0);
+		if (this.timeMap.size > 0) {
+			this.timeMap
+				.forEach((value, key) => {
+					if (value) {
+						timeSum.add(value);
+					}
+				});
+		}
+		return this.dateTimeUtil.formatDurationAsTime(timeSum);
+	}
+
 	private fetchWorkdays(): void {
 		const workdaySubscription = this.rest.fetchWorkdays(this.currentMonth, this.currentYear).subscribe({
 			next: (workdaysData) => {
@@ -152,6 +176,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 			const record: DayRecord = {
 				day: day,
 				data: new BehaviorSubject<Maybe<Workday>>(undefined),
+				workingTime: undefined,
 			};
 			this.dataMap.set(this.getIndexFromDate(record.day), record);
 		});
@@ -181,6 +206,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 export type DayRecord = {
 	day: Moment;
 	data: BehaviorSubject<Maybe<Workday>>;
+	workingTime: Maybe<moment.Duration>;
 };
 
 enum DayType {

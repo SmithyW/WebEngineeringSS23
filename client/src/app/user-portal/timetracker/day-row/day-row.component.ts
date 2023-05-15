@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
-import { Moment } from "moment";
-import { DayRecord } from "../timetracker.component";
-import { Form, FormArray, FormControl } from "@angular/forms";
-import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
-import * as moment from "moment";
-import { BehaviorSubject, Observer, Subscription } from "rxjs";
+import { FormArray, FormControl } from "@angular/forms";
 import { Maybe } from "@shared/custom/types";
 import { Workday } from "@shared/models/workday.model";
+import * as moment from "moment";
+import { Moment } from "moment";
+import { BehaviorSubject, Observer, Subscription } from "rxjs";
+import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
+import { DayRecord } from "../timetracker.component";
+import { KeyValue } from "@angular/common";
 
 @Component({
 	selector: "tr[app-day-row]",
@@ -17,6 +18,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	@Input() dayRecord: DayRecord | undefined;
 
 	@Output() rowForm: EventEmitter<FormArray> = new EventEmitter();
+	@Output() timeChanges: EventEmitter<KeyValue<Moment, moment.Duration>> = new EventEmitter();
 
 	startForm: FormControl<string>;
 	endForm: FormControl<string>;
@@ -64,7 +66,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 			this.startForm.setValue(this.getTimeFromDate(workday.start));
 			this.endForm.setValue(this.getTimeFromDate(workday.end));
 			this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(workday.break)));
-			this.noteForm.setValue(workday.note || '');
+			this.noteForm.setValue(workday.note || "");
 		}
 		this.startForm.markAsUntouched();
 		this.endForm.markAsUntouched();
@@ -110,29 +112,33 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	}
 
 	private calculateWorkingTime() {
-		let newWorkingTime = "";
+		let newWorkingTime: moment.Duration;
 		const start = this.startTime.getValue()?.clone();
 		const end = this.endTime.getValue()?.clone();
 		const breakTime = this.breakTime.getValue()?.clone();
 		if (!start || !end) {
-			newWorkingTime = "00:00";
+			newWorkingTime = moment.duration(0);
 		} else {
-			let timespan;
 			if (breakTime) {
-				timespan = end.subtract(start).subtract(breakTime);
+				newWorkingTime = end.subtract(start).subtract(breakTime);
 			} else {
-				timespan = end.subtract(start);
-			}
-			if (timespan.asMinutes() < 0) {
-				newWorkingTime = "Ungültige Zeit, bitte Eingabe prüfen!";
-			} else {
-				newWorkingTime =
-					timespan.hours().toLocaleString("de", { minimumIntegerDigits: 2 }) +
-					":" +
-					timespan.minutes().toLocaleString("de", { minimumIntegerDigits: 2 });
+				newWorkingTime = end.subtract(start);
 			}
 		}
-		this.workingTime = newWorkingTime;
+		if (newWorkingTime.asMinutes() < 0) {
+			newWorkingTime = moment.duration(0);
+			this.workingTime = "Ungültige Zeit, bitte Eingabe prüfen!";
+		} else {
+			this.workingTime = this.dateUtil.formatDurationAsTime(newWorkingTime);
+		}
+		if (!this.dayRecord?.day) {
+			console.error('no day to report time');
+		} else {
+			this.timeChanges.next({
+				key: this.dayRecord.day,
+				value: newWorkingTime
+			});
+		}
 	}
 
 	private getTimeFromDate(date: Date): string {
