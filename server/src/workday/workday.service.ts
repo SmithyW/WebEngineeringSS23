@@ -25,6 +25,7 @@ export class WorkdayService {
 
   update(id: string, updateWorkdayDto: UpdateWorkdayDto): Promise<Workday> {
     const updatedWorkday = new this.workdayModel(updateWorkdayDto);
+    updatedWorkday._id = id;
     return this.workdayModel.findOneAndUpdate({ _id: id }, updatedWorkday, { new: true }).exec();
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Res, Put } from '@nestjs/common';
 import { WorkdayService } from './workday.service';
 import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
@@ -93,7 +93,7 @@ export class WorkdayController {
     );
   }
 
-  @Patch(':workdayId')
+  @Put(':workdayId')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('workdayId') workdayId: string,
