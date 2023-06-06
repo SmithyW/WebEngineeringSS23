@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, Res, Put } from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -12,10 +12,11 @@ export class ContractController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
+    @Param('userId') userId: string,
     @Body() createContractDto: CreateContractDto,
     @Res() response
     ): Promise<IBaseResponse<Contract | any>> {
-
+      createContractDto.user = userId; 
       return this.contractService.create(createContractDto).then((contract: Contract) => {
         const res: IBaseResponse<Contract> = {
           success: true,
@@ -89,7 +90,7 @@ export class ContractController {
     });
   }
 
-  @Patch(':contractId')
+  @Put(':contractId')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('contractId') contractId: string,

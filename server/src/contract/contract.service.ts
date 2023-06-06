@@ -12,7 +12,7 @@ export class ContractService {
 
   create(createContractDto: CreateContractDto): Promise<Contract> {
     const createdContract: ContractDocument = new this.contractModel(createContractDto);
-    createdContract.setWeeklyTime();
+    this.setWeeklyTime(createdContract);
     return createdContract.save();
   }
 
@@ -32,7 +32,8 @@ export class ContractService {
 
   update(id: string, updateContractDto: UpdateContractDto): Promise<Contract> {
     const updatedContract = new this.contractModel(updateContractDto);
-    updatedContract.setWeeklyTime();
+    updatedContract._id = id;
+    this.setWeeklyTime(updatedContract);
     return this.contractModel.findOneAndUpdate({ _id: id }, updatedContract, { new: true })
       .populate('user')
       .populate('supervisor')
@@ -41,5 +42,14 @@ export class ContractService {
 
   remove(id: string): Promise<any> {
     return this.contractModel.deleteOne({ _id: id }).exec();
+  }
+
+  private setWeeklyTime(contract: Contract): void {
+    const timePerWeekday = contract.timePerWeekday;
+    let weeklyTime = 0;
+    timePerWeekday.forEach((day) => {
+      weeklyTime += day.time;
+    });
+    contract.weeklyTime = weeklyTime; 
   }
 }

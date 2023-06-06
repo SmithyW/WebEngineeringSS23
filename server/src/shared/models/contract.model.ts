@@ -11,9 +11,6 @@ export class Contract {
   _id: string | mongoose.Types.ObjectId;
 
   @Prop({ required: true })
-  num: number;
-
-  @Prop({ required: true })
   begin: Date;
 
   @Prop({ required: true })
@@ -33,7 +30,6 @@ export class Contract {
 
   constructor(
     _id: string | mongoose.Types.ObjectId,
-    num: number,
     begin: Date,
     end: Date,
     weeklyTime: number,
@@ -42,7 +38,6 @@ export class Contract {
     supervisor: User | string | undefined = undefined,
   ) {
     this._id = _id;
-    this.num = num;
     this.begin = begin;
     this.end = end;
     this.weeklyTime = weeklyTime;
@@ -51,14 +46,6 @@ export class Contract {
     this.user = user;
   }
 
-  // Function to calculate and set weeklyTime from time values in timePerWeekday
-  setWeeklyTime(): void {
-    let wklyTime: number = 0;
-    this.timePerWeekday.forEach((tpw) => {
-      wklyTime += tpw.time;
-    });
-    this.weeklyTime = wklyTime;
-  }
 }
 
 export const ContractSchema = SchemaFactory.createForClass(Contract);
