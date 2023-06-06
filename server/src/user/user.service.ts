@@ -25,7 +25,8 @@ export class UserService {
 
   update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const updatedUser = new this.userModel(updateUserDto);
-    return this.userModel.findOneAndUpdate({ _id: id }, updateUserDto, { new: true }).exec();
+    updatedUser._id = id;
+    return this.userModel.findOneAndUpdate({ _id: id }, updatedUser, { new: true }).exec();
   }
 
   remove(id: string): Promise<any> {

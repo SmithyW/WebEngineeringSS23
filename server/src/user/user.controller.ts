@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Res, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -83,7 +83,7 @@ export class UserController {
     );
   }
 
-  @Patch(':userId')
+  @Put(':userId')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('userId') userId: string,
