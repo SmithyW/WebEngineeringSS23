@@ -58,7 +58,27 @@ export class RestService {
     });
   }
 
+  public fetchContractById(contractId: string): Observable<ContractData> {
+    const user = this.authServcie.getUser();
+    if (!user?._id){
+      throw new Error('A user must be logged in!');
+    }
+
+    const url = paths.REST_FETCH_CONTRACT_BY_ID_URL.resolve(user._id.toString(), contractId);
+    return this.httpClient.get<ContractData>(url);
+  }
+
   public updateContract(contract: ContractData): Observable<ContractData> {
+    const user = this.authServcie.getUser();
+    if (!user?._id){
+      throw new Error('A user must be logged in!');
+    }
+
+    const url = paths.REST_UPDATE_CONTRACT_URL.resolve(user._id.toString(), contract);
+    return this.httpClient.put<ContractData>(url, contract);
+  }
+
+  public createContract(contract: ContractData): Observable<ContractData> {
     const user = this.authServcie.getUser();
     if (!user?._id){
       throw new Error('A user must be logged in!');

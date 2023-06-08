@@ -1,0 +1,54 @@
+<div class="container text-center pt-5 justify-content-center">
+    <ng-container *ngIf="error;">
+        <p class="text-danger fs-4">Ups, der Vertrag konnte leider nicht gefunden werden...</p>
+    </ng-container>
+    <ng-template #loading>
+        <div class="spinner-border text-primary " role="status">
+            <span class="visually-hidden">Wird geladen...</span>
+        </div>
+    </ng-template>
+    <div *ngIf="contract || isNew; else loading">
+        <h1 *ngIf="contract ; else new" class="text-primary">{{"Vertrag " + formatDate(contract.begin) + " - " + formatDate(contract.end)}}</h1>
+        <ng-template #new>
+            <h1 class="text-primary">Neuer Vertrag</h1>
+        </ng-template>
+        <form class="text-start">
+            <div class="row mb-3 justify-content-md-center">
+                <label for="Vertragsbeginn" class="col-md-2 col-form-label me-3">Vertragsbeginn:</label>
+                <div class="col-md-auto">
+                    <input type="date" class="form-control" id="Vertragsbeginn" [formControl]="beginControl"
+                        style="width: 20em;">
+                </div>
+            </div>
+            <div class="row mb-3 justify-content-md-center">
+                <label for="Vertragsende" class="col-md-2 col-form-label me-3">Vertragsende:</label>
+                <div class="col-md-auto">
+                    <input type="date" class="form-control" id="Vertragsende" [formControl]="endControl"
+                        style="width: 20em;">
+                </div>
+            </div>
+            <div class="row mb-3 justify-content-md-center">
+                <label for="Fachvorgesetzte/Fachvorgesetzter"
+                    class="col-md-2 col-form-label me-3">Fachvorgesetzte/Fachvorgesetzter:</label>
+                <div class="col-md-auto">
+                    <input type="text" class="form-control" id="Fachvorgesetzte/Fachvorgesetzter"
+                        [formControl]="supervisorControl" style="width: 20em;">
+                </div>
+            </div>
+            <div class="row mb-3 justify-content-md-center">
+                <label for="Wöchentliche Arbeitszeit (Stunden)" class="col-md-2 col-form-label me-3">Wöchentliche
+                    Arbeitszeit (Stunden):</label>
+                <div class="col-md-auto">
+                    <input type="number" class="form-control" id="Wöchentliche Arbeitszeit (Stunden)"
+                        [formControl]="weeklyWorkingtimeControl" style="width: 20em;">
+                </div>
+            </div>
+            <div class="row mb-3 justify-content-md-center">
+                <div class="col-1">
+                    <button type="submit" (click)="save()" class="btn btn-primary me-3"
+                        [disabled]="form?.pristine || true && !form?.dirty" id="save">Speichern</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

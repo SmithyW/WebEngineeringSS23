@@ -34,7 +34,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		_id: "",
 		begin: new Date(2023, 3, 1),
 		end: new Date(2023, 6, 15),
-		num: 1,
 		timePerWeekday: [
 			{
 				time: 4,
