@@ -1,16 +1,17 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Moment } from "moment";
 import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
-import { Workday } from "@shared/models/workday.model";
 import { RestService } from "src/app/services/rest/rest.service";
 import { BehaviorSubject, Subscription, windowTime } from "rxjs";
 import * as moment from "moment";
-import { ContractData, Maybe } from "@shared/custom/types";
+import { ContractData, Maybe, WorkdayData } from "@shared/custom/types";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { AbstractControl } from "@angular/forms";
 import { Month } from "@shared/enums/month.enum";
 import { Contract } from "@shared/models/contract.model";
 import { KeyValue } from "@angular/common";
+import { AuthenticationService } from "src/app/services/authentication/authentication.service";
+import { TimeSpan } from "@shared/custom/timeSpan";
 
 moment.locale("de");
 
@@ -34,7 +35,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		_id: "",
 		begin: new Date(2023, 3, 1),
 		end: new Date(2023, 6, 15),
-		num: 1,
 		timePerWeekday: [
 			{
 				time: 4,
@@ -44,16 +44,21 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		user: "userId",
 		weeklyTime: 10,
 	};
-	monthSum: string = '';
+	monthSum: string = "";
 
 	readonly months = Month;
 
 	private dataMap: Map<number, DayRecord> = new Map();
 	private timeMap: Map<Moment, moment.Duration> = new Map();
+	private workdayMap: Map<number, Partial<WorkdayData>> = new Map();
 	private dates: Moment[] = [];
 	private subscriptions = new Subscription();
 
-	constructor(private dateTimeUtil: DateTimeUtilsService, private rest: RestService) {
+	constructor(
+		private dateTimeUtil: DateTimeUtilsService,
+		private rest: RestService,
+		private authService: AuthenticationService
+	) {
 		this.currentMonth = this.dateTimeUtil.getCurrentMonth();
 		this.currentYear = new Date().getFullYear();
 		this.yearSelect = this.currentYear;
@@ -99,8 +104,34 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.monthSum = this.calculateMonthSum();
 	}
 
+	updateWorkday(workday: KeyValue<Moment, Partial<WorkdayData>>) {
+		console.info('workday changed', workday);
+		this.workdayMap.set(this.getIndexFromDate(workday.key), workday.value);
+	}
+
 	save() {
-		console.warn("TODO: save");
+		for (let workday of this.workdayMap.values()) {
+			const date = moment({
+				year: workday.start?.getFullYear(),
+				month: workday.start?.getMonth(),
+				day: workday.start?.getDay(),
+			});
+			const fetchedWorkday = this.dataMap.get(this.getIndexFromDate(date))?.data.getValue();
+			if (fetchedWorkday) {
+				workday = {
+					_id: fetchedWorkday?._id,
+					start: workday.start || fetchedWorkday?.start,
+					end: workday.end || fetchedWorkday?.end,
+					break: workday.break || fetchedWorkday?.break,
+					user: this.authService.getUser()?._id.toString() || "",
+				};
+				console.info('update workday', workday);
+				this.rest.updateWorkday(workday);
+			} else {
+				console.info('create workday', workday)
+				this.rest.createWorkday(workday);
+			}
+		}
 	}
 
 	sign() {
@@ -141,12 +172,11 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	private calculateMonthSum(): string {
 		let timeSum: moment.Duration = moment.duration(0);
 		if (this.timeMap.size > 0) {
-			this.timeMap
-				.forEach((value, key) => {
-					if (value) {
-						timeSum.add(value);
-					}
-				});
+			this.timeMap.forEach((value, key) => {
+				if (value) {
+					timeSum.add(value);
+				}
+			});
 		}
 		return this.dateTimeUtil.formatDurationAsTime(timeSum);
 	}
@@ -175,7 +205,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.dates.forEach((day) => {
 			const record: DayRecord = {
 				day: day,
-				data: new BehaviorSubject<Maybe<Workday>>(undefined),
+				data: new BehaviorSubject<Maybe<WorkdayData>>(undefined),
 				workingTime: undefined,
 			};
 			this.dataMap.set(this.getIndexFromDate(record.day), record);
@@ -205,7 +235,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 export type DayRecord = {
 	day: Moment;
-	data: BehaviorSubject<Maybe<Workday>>;
+	data: BehaviorSubject<Maybe<WorkdayData>>;
 	workingTime: Maybe<moment.Duration>;
 };
 

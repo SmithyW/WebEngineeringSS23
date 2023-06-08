@@ -6,6 +6,7 @@ import { NotFound404Component } from '../not-found404/not-found404.component';
 import { TimetrackerComponent } from './timetracker/timetracker.component';
 import { ContractsComponent } from './contracts/contracts.component';
 import { AccountDetailsComponent } from './account-details/account-details.component';
+import { ContractDetailsComponent } from './contracts/contract-details/contract-details.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
       {
         path: 'home',
         component: HomeComponent,
+        pathMatch: 'full'
       },
       {
         path: 'home/zeiterfassung',
@@ -23,6 +25,14 @@ const routes: Routes = [
       {
         path: 'home/vertragdetails',
         component: ContractsComponent,
+      },
+      {
+        path: 'home/vertragdetails/neu',
+        component: ContractDetailsComponent,
+      },
+      {
+        path: 'home/vertragdetails/:id',
+        component: ContractDetailsComponent,
       },
       {
         path: 'home/account',

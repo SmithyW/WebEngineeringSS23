@@ -94,7 +94,8 @@
               <tr app-disabled-day-row [dayRecord]="dayRecord" class="weekend"></tr>
             </ng-container>
             <ng-container *ngSwitchCase="WORKDAY">
-              <tr app-day-row [dayRecord]="dayRecord" (rowForm)="addRowForm($event)" (timeChanges)="updateTime($event)"></tr>
+              <tr app-day-row [dayRecord]="dayRecord" (rowForm)="addRowForm($event)" (timeChanges)="updateTime($event)"
+                (workday)="updateWorkday($event)"></tr>
             </ng-container>
           </ng-container>
         </ng-container>

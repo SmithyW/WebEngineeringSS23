@@ -96,6 +96,14 @@ export class DateTimeUtilsService {
 		);
 	}
 
+	public formatDate(date: Moment | Date): string {
+		if (date instanceof Date){
+			date = moment(date);
+		}
+		date.locale("de");
+		return date.format("DD.MM.YYYY");
+	}
+
 	private getMonth(num: number): Month {
 		switch (num) {
 			case 0:

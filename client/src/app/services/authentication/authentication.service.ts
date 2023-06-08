@@ -8,9 +8,9 @@ import { User } from '@shared/models/user.model';
 export class AuthenticationService {
 
   private user: Maybe<User> = {
-    _id: 'hardCodedUserId',
-    name: 'Hard Coded User',
-    email: "hard@coded.user"
+    _id: 'Ujmq394n0mhwepfu',
+    name: 'Test User',
+    email: "user@example.test"
   };
 
   constructor() {}
