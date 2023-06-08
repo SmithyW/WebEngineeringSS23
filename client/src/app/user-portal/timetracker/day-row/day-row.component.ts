@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { FormArray, FormControl } from "@angular/forms";
-import { Maybe } from "@shared/custom/types";
+import { Maybe, WorkdayData } from "@shared/custom/types";
 import { Workday } from "@shared/models/workday.model";
 import * as moment from "moment";
 import { Moment } from "moment";
@@ -8,6 +8,7 @@ import { BehaviorSubject, Observer, Subscription } from "rxjs";
 import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
 import { DayRecord } from "../timetracker.component";
 import { KeyValue } from "@angular/common";
+import { TimeSpan } from "@shared/custom/timeSpan";
 
 @Component({
 	selector: "tr[app-day-row]",
@@ -19,6 +20,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 
 	@Output() rowForm: EventEmitter<FormArray> = new EventEmitter();
 	@Output() timeChanges: EventEmitter<KeyValue<Moment, moment.Duration>> = new EventEmitter();
+	@Output() workday: EventEmitter<KeyValue<Moment, Partial<WorkdayData>>> = new EventEmitter();
 
 	startForm: FormControl<string>;
 	endForm: FormControl<string>;
@@ -29,6 +31,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	private startTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
 	private endTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
 	private breakTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
+	private note = new BehaviorSubject<Maybe<string>>(undefined);
 	private form: FormArray;
 	private subscriptions: Subscription = new Subscription();
 
@@ -81,9 +84,15 @@ export class DayRowComponent implements OnInit, OnDestroy {
 				this.calculateWorkingTime();
 			},
 		};
+		const updateWorkday: Partial<Observer<any>> = {
+			next: (val) => {
+				this.updateWorkday();
+			},
+		};
 		this.subscriptions.add(this.startTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.endTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.breakTime.subscribe(onTimeChange));
+		this.subscriptions.add(this.note.subscribe(updateWorkday));
 		this.subscriptions.add(this.dayRecord?.data.subscribe({ next: (workday) => this.initFormValues(workday) }));
 	}
 
@@ -132,13 +141,30 @@ export class DayRowComponent implements OnInit, OnDestroy {
 			this.workingTime = this.dateUtil.formatDurationAsTime(newWorkingTime);
 		}
 		if (!this.dayRecord?.day) {
-			console.error('no day to report time');
+			console.error("no day to report time");
 		} else {
 			this.timeChanges.next({
 				key: this.dayRecord.day,
-				value: newWorkingTime
+				value: newWorkingTime,
 			});
+			this.updateWorkday();
 		}
+	}
+
+	private updateWorkday() {
+		if (!this.dayRecord?.day) {
+			throw new Error("no day to report time");
+		}
+		console.log(this.dayRecord.day);
+		this.workday.next({
+			key: this.dayRecord.day,
+			value: {
+				start: this.dateFromTime(this.startTime.getValue()),
+				end: this.dateFromTime(this.endTime.getValue()),
+				break: new TimeSpan(this.breakTime.getValue()?.hours() || 0, this.breakTime.getValue()?.minutes() || 0),
+				note: this.noteForm.value,
+			},
+		});
 	}
 
 	private getTimeFromDate(date: Date): string {
@@ -146,5 +172,15 @@ export class DayRowComponent implements OnInit, OnDestroy {
 			return "00:00";
 		}
 		return moment(date).format("HH:mm");
+	}
+
+	private dateFromTime(time: moment.Duration | undefined): Date {
+		if(!this.dayRecord?.day) {
+			throw new Error("missing dayRecord?.day");
+		}
+		if (!time) {
+			time = moment.duration(0);
+		}
+		return moment(this.dayRecord.day).set('hours', 0).set('minutes', 0).add(time).toDate();
 	}
 }

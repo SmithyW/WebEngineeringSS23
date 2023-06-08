@@ -21,10 +21,21 @@ export class REST_FETCH_WORKDAYS_URL {
 export class REST_UPDATE_WORKDAY_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/workdays/{id}';
 
-  public static resolve(userid: string, workday: WorkdayData): string {
+  public static resolve(userid: string, workday: Partial<WorkdayData>): string {
+    if (!workday._id) {
+      throw new Error('missing workday._id');
+    }
     return REST_FETCH_WORKDAYS_URL.url
       .replace('{userId}', userid)
       .replace('{id}', workday._id.toString());
+  }
+}
+
+export class REST_CREATE_WORKDAY_URL {
+  static readonly url = REST_BASE_URL + '/users/{userId}/workdays';
+
+  public static resolve(userid: string): string {
+    return REST_FETCH_WORKDAYS_URL.url.replace('{userId}', userid);
   }
 }
 
@@ -61,12 +72,13 @@ export class REST_UPDATE_CONTRACT_URL {
       .replace('{userId}', userid)
       .replace('{id}', contract._id.toString());
   }
+}
 
-  public static queryParams(month: Month, year: number): MonthYear {
-    return {
-      month: month,
-      year: year,
-    };
+export class REST_CREATE_CONTRACT_URL {
+  static readonly url = REST_BASE_URL + '/users/{userId}/contracts';
+
+  public static resolve(userid: string): string {
+    return REST_FETCH_CONTRACT_URL.url.replace('{userId}', userid);
   }
 }
 
