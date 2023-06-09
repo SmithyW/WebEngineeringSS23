@@ -80,6 +80,7 @@ export class ContractDetailsComponent implements OnInit, OnDestroy {
     this.form?.updateValueAndValidity();
     if(this.isNew){
       this.create();
+      console.log(this.form?.value);
     } else {
       this.update();
     }
