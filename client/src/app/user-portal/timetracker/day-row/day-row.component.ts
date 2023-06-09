@@ -155,7 +155,6 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		if (!this.dayRecord?.day) {
 			throw new Error("no day to report time");
 		}
-		console.log(this.dayRecord.day);
 		this.workday.next({
 			key: this.dayRecord.day,
 			value: {

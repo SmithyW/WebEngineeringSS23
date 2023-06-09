@@ -105,7 +105,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	updateWorkday(workday: KeyValue<Moment, Partial<WorkdayData>>) {
-		console.info('workday changed', workday);
 		this.workdayMap.set(this.getIndexFromDate(workday.key), workday.value);
 	}
 
