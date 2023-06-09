@@ -78,7 +78,7 @@ export class REST_CREATE_CONTRACT_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/contracts';
 
   public static resolve(userid: string): string {
-    return REST_FETCH_CONTRACT_URL.url.replace('{userId}', userid);
+    return REST_CREATE_CONTRACT_URL.url.replace('{userId}', userid);
   }
 }
 

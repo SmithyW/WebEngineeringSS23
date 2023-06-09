@@ -17,6 +17,7 @@ import { DayRowComponent } from './timetracker/day-row/day-row.component';
 import { DisabledDayRowComponent } from './timetracker/disabled-day-row/disabled-day-row.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ContractDetailsComponent } from './contracts/contract-details/contract-details.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ContractDetailsComponent } from './contracts/contract-details/contract-
     MatToolbarModule,
     MatCommonModule,
     MatFormFieldModule,
+    MatIconModule,
     NgbModule,
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
