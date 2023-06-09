@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, Res, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpStatus, HttpCode, Res, Put } from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -41,13 +41,14 @@ export class ContractController {
   @HttpCode(HttpStatus.OK)
   findAll(
     @Param('userId') userId: string,
-    @Res() response): Promise<IBaseResponse<Contract[] | any>> {
+    @Res() response,
+  ): Promise<IBaseResponse<Contract[] | any>> {
     let filter = {};
     if (userId) {
       filter = { user: userId };
     }
     return this.contractService.findAll(filter).then((contracts: Contract[]) => {
-      const res: IBaseResponse<Contract[]> = {
+        const res: IBaseResponse<Contract[]> = {
         success: true,
         message: 'Contracts found',
         data: contracts
@@ -65,11 +66,11 @@ export class ContractController {
   );
   }
 
-  @Get(':contractId')
-  @HttpCode(HttpStatus.OK)
-  findOne(
-    @Param('contractId') contractId: string, 
-    @Res() response
+    @Get(':contractId')
+    @HttpCode(HttpStatus.OK)
+    findOne(
+    @Param('contractId') contractId: string,
+    @Res() response,
     ): Promise<IBaseResponse<Contract | any>> {
 
     return this.contractService.findOne(contractId).then((contract: Contract) => {

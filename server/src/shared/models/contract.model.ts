@@ -45,7 +45,6 @@ export class Contract {
     this.supervisor = supervisor;
     this.user = user;
   }
-
 }
 
 export const ContractSchema = SchemaFactory.createForClass(Contract);

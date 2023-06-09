@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Res, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, Res, Put } from '@nestjs/common';
 import { WorkdayService } from './workday.service';
 import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
@@ -118,6 +118,18 @@ export class WorkdayController {
       }
     );
   }
+
+  @Post('/multiple')
+  @HttpCode(HttpStatus.OK)
+  updateMultiple(
+    @Param('userId') userId: string,
+    @Body() updateWorkdaysDto: UpdateWorkdayDto[],
+    @Res() response
+    ): Promise<IBaseResponse<Workday[] | any>> {
+      // #TODO;
+      return response.status(HttpStatus.OK).json({ message: "Not implemented yet" });
+    }
+
 
   @Delete(':workdayId')
   @HttpCode(HttpStatus.OK)
