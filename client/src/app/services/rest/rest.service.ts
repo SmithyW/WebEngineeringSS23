@@ -49,7 +49,9 @@ export class RestService {
 		}
     workday.user = user._id.toString();
 
+    
 		const url = paths.REST_CREATE_WORKDAY_URL.resolve(user._id.toString());
+    console.log('create workday',url, workday);
 		return this.httpClient.post<WorkdayData>(url, workday);
 	}
 

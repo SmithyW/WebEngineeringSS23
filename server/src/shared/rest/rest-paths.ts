@@ -35,7 +35,7 @@ export class REST_CREATE_WORKDAY_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/workdays';
 
   public static resolve(userid: string): string {
-    return REST_FETCH_WORKDAYS_URL.url.replace('{userId}', userid);
+    return REST_CREATE_WORKDAY_URL.url.replace('{userId}', userid);
   }
 }
 
@@ -58,7 +58,7 @@ export class REST_FETCH_CONTRACT_BY_ID_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/contracts/{id}';
 
   public static resolve(userid: string, contractId: string): string {
-    return REST_FETCH_CONTRACT_URL.url
+    return REST_FETCH_CONTRACT_BY_ID_URL.url
       .replace('{userId}', userid)
       .replace('{id}', contractId);
   }
@@ -68,7 +68,7 @@ export class REST_UPDATE_CONTRACT_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/contracts/{id}';
 
   public static resolve(userid: string, contract: ContractData): string {
-    return REST_FETCH_CONTRACT_URL.url
+    return REST_UPDATE_CONTRACT_URL.url
       .replace('{userId}', userid)
       .replace('{id}', contract._id.toString());
   }
@@ -78,7 +78,7 @@ export class REST_CREATE_CONTRACT_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/contracts';
 
   public static resolve(userid: string): string {
-    return REST_FETCH_CONTRACT_URL.url.replace('{userId}', userid);
+    return REST_CREATE_CONTRACT_URL.url.replace('{userId}', userid);
   }
 }
 
@@ -86,7 +86,7 @@ export class REST_FETCH_USER_URL {
   static readonly url = REST_BASE_URL + '/users/{id}';
 
   public static resolve(userid: string): string {
-    return REST_FETCH_WORKDAYS_URL.url.replace('{id}', userid);
+    return REST_FETCH_USER_URL.url.replace('{id}', userid);
   }
 }
 
@@ -94,6 +94,6 @@ export class REST_UPDATE_USER_URL {
   static readonly url = REST_BASE_URL + '/users/{id}';
 
   public static resolve(userid: string): string {
-    return REST_FETCH_WORKDAYS_URL.url.replace('{id}', userid);
+    return REST_UPDATE_USER_URL.url.replace('{id}', userid);
   }
 }
