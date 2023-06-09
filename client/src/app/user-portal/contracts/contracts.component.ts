@@ -26,8 +26,8 @@ export class ContractsComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.subscriptions.add(
 			this.rest.fetchContracts().subscribe({
-				next: (data) => {
-					this.contracts = data;
+				next: (response) => {
+					this.contracts = response.data;
 				},
 				error: (err) => {
 					console.error("Error while fetching all contracts:", err);

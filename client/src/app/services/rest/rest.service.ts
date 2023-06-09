@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Workday } from "@shared/models/workday.model";
 import { Observable } from "rxjs";
 import { Month } from "@shared/enums/month.enum";
+import { RestResponse } from "@shared/custom/responses";
 import { Contract } from "@shared/models/contract.model";
 import * as paths from "@shared/rest/rest-paths";
 import { AuthenticationService } from "../authentication/authentication.service";
@@ -49,7 +50,7 @@ export class RestService {
 		}
     workday.user = user._id.toString();
 
-    
+
 		const url = paths.REST_CREATE_WORKDAY_URL.resolve(user._id.toString());
     console.log('create workday',url, workday);
 		return this.httpClient.post<WorkdayData>(url, workday);
@@ -92,19 +93,18 @@ export class RestService {
 		if (!user?._id) {
 			throw new Error("A user must be logged in!");
 		}
-    console.log(user);
 		const url = paths.REST_CREATE_CONTRACT_URL.resolve(user._id.toString());
 		return this.httpClient.post<ContractData>(url, contract);
 	}
 
-	public fetchContracts(): Observable<ContractData[]> {
+	public fetchContracts(): Observable<RestResponse<ContractData[]>> {
 		const user = this.authServcie.getUser();
 		if (!user?._id) {
 			throw new Error("A user must be logged in!");
 		}
 
 		const url = paths.REST_FETCH_CONTRACT_URL.resolve(user._id.toString());
-		return this.httpClient.get<ContractData[]>(url);
+		return this.httpClient.get<RestResponse<ContractData[]>>(url);
 	}
 
 	public fetchUser(): Observable<UserData> {
