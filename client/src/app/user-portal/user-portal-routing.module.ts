@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { HomeComponent } from './home/home.component';
 import { UserPortalComponent } from './user-portal.component';
 import { NotFound404Component } from '../not-found404/not-found404.component';
 import { TimetrackerComponent } from './timetracker/timetracker.component';
@@ -15,8 +14,8 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
-        component: HomeComponent,
-        pathMatch: 'full'
+        pathMatch: 'full',
+        redirectTo: 'home/zeiterfassung'
       },
       {
         path: 'home/zeiterfassung',

@@ -8,7 +8,6 @@ import { NavLink } from './nav-link.enum';
   styleUrls: ['./nav.component.scss'],
 })
 export class NavComponent {
-  readonly HOME = NavLink.HOME;
   readonly TIMETRACKING = NavLink.TIMETRACKING;
   readonly CONTRACTS = NavLink.CONTRACTS;
   readonly ACCOUNT = NavLink.ACCOUNT;
@@ -18,9 +17,6 @@ export class NavComponent {
   navigate(link: NavLink) {
     let url = [];
     switch (link) {
-      case this.HOME:
-        url = ['home'];
-        break;
       case this.TIMETRACKING:
         url = ['home', 'zeiterfassung'];
         break;
