@@ -12,7 +12,7 @@
         <ng-template #new>
             <h1 class="text-primary">Neuer Vertrag</h1>
         </ng-template>
-        <form class="text-start">
+        <form class="text-start" [formGroup]="form" *ngIf="form">
             <div class="row mb-3 justify-content-md-center">
                 <label for="Vertragsbeginn" class="col-md-2 col-form-label me-3">Vertragsbeginn:</label>
                 <div class="col-md-auto">
@@ -36,17 +36,35 @@
                 </div>
             </div>
             <div class="row mb-3 justify-content-md-center">
-                <label for="Wöchentliche Arbeitszeit (Stunden)" class="col-md-2 col-form-label me-3">Wöchentliche
-                    Arbeitszeit (Stunden):</label>
-                <div class="col-md-auto">
-                    <input type="number" class="form-control" id="Wöchentliche Arbeitszeit (Stunden)"
-                        [formControl]="weeklyWorkingtimeControl" style="width: 20em;">
+              <label for="Wöchentliche Arbeitszeit (Stunden)" class="col-md-2 col-form-label me-3">Wöchentliche
+                Arbeitszeit (Stunden/Wochentag):</label>
+
+              <div class="col-md-auto" formArrayName="timePerWeekday">
+                <div *ngFor="let item of timePerWeekdayArray.controls; let i = index" [formGroupName]="i">
+                  <div class="row mb-2 justify-content-mb-center">
+                    <select type="text" class="form-control" [id]="'weekday_' + i"
+                      formControlName="weekday" style="width: 12em;" *ngIf="weekdays">
+                      <option *ngFor="let el of weekdays" [value]="el.value" [selected]="form.value.timePerWeekday[i]?.weekday === el.value">{{ el.text }}</option>
+                    </select>
+                    <input type="number" class="form-control" [id]="'time_' + i"
+                    formControlName="time" style="width: 5em;">
+                    <button type="button" class="btn"
+                      (click)="removeTime(i)" style="width: 3em;">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
+                <div class="row justify-content-md-left">
+                  <div class="col-md-auto">
+                    <button type="button" class="btn btn-secondary" (click)="addTime()">Hinzufügen</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="row mb-3 justify-content-md-center">
                 <div class="col-1">
                     <button type="submit" (click)="save()" class="btn btn-primary me-3"
-                        [disabled]="form?.pristine || true && !form?.dirty" id="save">Speichern</button>
+                        [disabled]="form.pristine || true && !form.dirty" id="save">Speichern</button>
                 </div>
             </div>
         </form>

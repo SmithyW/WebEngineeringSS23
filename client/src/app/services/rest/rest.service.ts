@@ -73,7 +73,6 @@ export class RestService {
 		if (!user?._id) {
 			throw new Error("A user must be logged in!");
 		}
-
 		const url = paths.REST_FETCH_CONTRACT_BY_ID_URL.resolve(user._id.toString(), contractId);
 		return this.httpClient.get<ContractData>(url);
 	}
@@ -93,7 +92,7 @@ export class RestService {
 		if (!user?._id) {
 			throw new Error("A user must be logged in!");
 		}
-
+    console.log(user);
 		const url = paths.REST_CREATE_CONTRACT_URL.resolve(user._id.toString());
 		return this.httpClient.post<ContractData>(url, contract);
 	}

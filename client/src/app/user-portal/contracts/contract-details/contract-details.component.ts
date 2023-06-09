@@ -1,8 +1,10 @@
+import { WeekDay } from "@angular/common";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormArray, Validators } from "@angular/forms";
 import { FormControl } from "@angular/forms";
 import { FormGroup } from "@angular/forms";
 import { ActivatedRoute, Route, ParamMap } from "@angular/router";
+import { EWeekday } from "@shared/enums/weekday.enum";
 import { ContractData } from "@shared/custom/types";
 import { Observable, Subscription } from "rxjs";
 import { RestService } from "src/app/services/rest/rest.service";
@@ -19,14 +21,24 @@ export class ContractDetailsComponent implements OnInit, OnDestroy {
   beginControl: FormControl = new FormControl();
   endControl: FormControl = new FormControl();
   supervisorControl: FormControl = new FormControl();
-  weeklyWorkingtimeControl: FormControl = new FormControl();
+  timePerWeekdayArray : FormArray<FormGroup> = new FormArray<FormGroup>([], [Validators.minLength(1)]);
 	error = false;
-  form: FormArray | undefined;
+  form: FormGroup | undefined;
   isNew = false;
 
 	private subscriptions = new Subscription();
 
-	constructor(private route: ActivatedRoute,
+  weekdays = [
+    { text: 'Montag', value: EWeekday.MONDAY },
+    { text: 'Dienstag', value: EWeekday.TUESDAY },
+    { text: 'Mittwoch', value: EWeekday.WEDNESDAY },
+    { text: 'Donnerstag', value: EWeekday.THURSDAY },
+    { text: 'Freitag', value: EWeekday.FRIDAY },
+    { text: 'Samstag', value: EWeekday.SATURDAY },
+    { text: 'Sonntag', value: EWeekday.SUNDAY }
+  ];
+
+  constructor(private route: ActivatedRoute,
     private rest: RestService,
     private dateUtil: DateTimeUtilsService,
     ) {}
@@ -63,8 +75,29 @@ export class ContractDetailsComponent implements OnInit, OnDestroy {
 		this.beginControl = new FormControl(this.contract?.begin, Validators.required);
 		this.endControl = new FormControl(this.contract?.end, Validators.required);
 		this.supervisorControl = new FormControl(this.contract?.supervisor);
-		this.weeklyWorkingtimeControl = new FormControl(this.contract?.weeklyTime, Validators.required);
-    this.form = new FormArray([this.beginControl, this.endControl, this.supervisorControl, this.weeklyWorkingtimeControl]);
+    if (this.contract?.timePerWeekday) {
+
+      for (let timePerWeekday of this.contract?.timePerWeekday){
+        this.timePerWeekdayArray.push(
+          new FormGroup<{weekday: FormControl<EWeekday | null>, time: FormControl<number | null>}>(
+            {
+              weekday: new FormControl<EWeekday>(timePerWeekday.weekday),
+              time: new FormControl<number>(timePerWeekday.time)
+            }
+          )
+        );
+      }
+    }
+
+    this.timePerWeekdayArray.setValidators([Validators.required]);
+    this.form = new FormGroup(
+      {
+        begin: this.beginControl,
+        end: this.endControl,
+        supervisor: this.supervisorControl,
+        timePerWeekday: this.timePerWeekdayArray
+      }
+    );
 	}
 
 	ngOnDestroy(): void {
@@ -75,11 +108,33 @@ export class ContractDetailsComponent implements OnInit, OnDestroy {
     return this.dateUtil.formatDate(date);
   }
 
+  createEmptyTimePerWeekdayItem(): FormGroup<{weekday: FormControl<EWeekday | null>, time: FormControl<number | null>}> {
+    return new FormGroup({
+      weekday: new FormControl<EWeekday | null>(null, [Validators.required]),
+      time: new FormControl<number | null>(null, [Validators.required]),
+    });
+  }
+
+  addTime(): void {
+    this.timePerWeekdayArray.push(this.createEmptyTimePerWeekdayItem());
+  }
+
+  removeTime(index: number): void {
+    this.timePerWeekdayArray.removeAt(index);
+  }
+
   save(): void {
-    console.warn("TODO: save contract");
     this.form?.updateValueAndValidity();
     if(this.isNew){
-      this.create();
+      console.log(this.form?.value);
+      this.rest.createContract(this.form?.value).subscribe({
+        next: (response) => {
+          console.log(response);
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
     } else {
       this.update();
     }

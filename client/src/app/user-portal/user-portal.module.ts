@@ -15,6 +15,7 @@ import { DisabledDayRowComponent } from './timetracker/disabled-day-row/disabled
 import { TimetrackerComponent } from './timetracker/timetracker.component';
 import { UserPortalRoutingModule } from './user-portal-routing.module';
 import { UserPortalComponent } from './user-portal.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { UserPortalComponent } from './user-portal.component';
     MatToolbarModule,
     MatCommonModule,
     MatFormFieldModule,
+    MatIconModule,
     NgbModule,
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
