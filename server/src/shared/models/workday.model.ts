@@ -15,7 +15,7 @@ export class Workday {
   @Prop({ required: true })
   end: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   break: TimeSpan;
 
   @Prop({ required: false })
