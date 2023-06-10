@@ -25,7 +25,7 @@ export class REST_UPDATE_WORKDAY_URL {
     if (!workday._id) {
       throw new Error('missing workday._id');
     }
-    return REST_FETCH_WORKDAYS_URL.url
+    return REST_UPDATE_WORKDAY_URL.url
       .replace('{userId}', userid)
       .replace('{id}', workday._id.toString());
   }
