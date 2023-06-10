@@ -1,5 +1,7 @@
+import { KeyValue } from "@angular/common";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
-import { FormArray, FormControl } from "@angular/forms";
+import { FormArray, FormControl, Validators } from "@angular/forms";
+import { TimeSpan } from "@shared/custom/timeSpan";
 import { Maybe, WorkdayData } from "@shared/custom/types";
 import { Workday } from "@shared/models/workday.model";
 import * as moment from "moment";
@@ -7,8 +9,9 @@ import { Moment } from "moment";
 import { BehaviorSubject, Observer, Subscription } from "rxjs";
 import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
 import { DayRecord } from "../timetracker.component";
-import { KeyValue } from "@angular/common";
-import { TimeSpan } from "@shared/custom/timeSpan";
+import { WorkdaySaveService } from "./workday-save.service";
+import { AuthenticationService } from "src/app/services/authentication/authentication.service";
+import { RestService } from "src/app/services/rest/rest.service";
 
 @Component({
 	selector: "tr[app-day-row]",
@@ -35,12 +38,25 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	private form: FormArray;
 	private subscriptions: Subscription = new Subscription();
 
-	constructor(private dateUtil: DateTimeUtilsService) {
+	constructor(
+		private dateUtil: DateTimeUtilsService,
+		private saveService: WorkdaySaveService,
+		private authService: AuthenticationService,
+		private rest: RestService
+	) {
 		this.startForm = new FormControl();
+		this.startForm.addValidators(Validators.required);
 		this.endForm = new FormControl();
+		this.endForm.addValidators(Validators.required);
 		this.breakForm = new FormControl();
 		this.noteForm = new FormControl();
 		this.form = new FormArray([this.startForm, this.endForm, this.breakForm, this.noteForm]);
+		const saveSubscription = this.saveService.getSaveSubject().subscribe({
+			next: (value) => {
+				this.save();
+			},
+		});
+		this.subscriptions.add(saveSubscription);
 	}
 
 	ngOnInit(): void {
@@ -178,12 +194,80 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	}
 
 	private dateFromTime(time: moment.Duration | undefined): Date {
-		if(!this.dayRecord?.day) {
+		if (!this.dayRecord?.day) {
 			throw new Error("missing dayRecord?.day");
 		}
 		if (!time) {
 			time = moment.duration(0);
 		}
-		return moment(this.dayRecord.day).set('hours', 0).set('minutes', 0).add(time).toDate();
+		return moment(this.dayRecord.day).set("hours", 0).set("minutes", 0).add(time).toDate();
+	}
+
+	private save(): void {
+		if (!this.dayRecord?.day) {
+			console.error("missing dayRecord.day", this.dayRecord);
+			return;
+		}
+		const fetchedWorkday = this.dayRecord?.data.getValue();
+		const formValue = {
+			start: this.dateFromTime(this.startTime.getValue()),
+			end: this.dateFromTime(this.endTime.getValue()),
+			break: new TimeSpan(this.breakTime.getValue()?.hours() || 0, this.breakTime.getValue()?.minutes() || 0),
+			note: this.noteForm.value,
+		};
+		if (fetchedWorkday && fetchedWorkday._id) {
+			this.update(formValue, fetchedWorkday);
+		} else if (this.form.valid) {
+			this.create(formValue);
+		} else {
+			if (!this.startForm.value && !this.endForm.value) {
+				console.info("skip saving emty workday", this.dayRecord);
+			} else {
+				console.warn("not saved: form is invalid", formValue);
+			}
+		}
+	}
+
+	private update(formValue: Omit<WorkdayData, '_id' | 'user'>, fetchedWorkday: WorkdayData) {
+		const workday: WorkdayData = {
+			_id: fetchedWorkday?._id,
+			start: formValue.start,
+			end: formValue.end,
+			break: formValue.break,
+			user: this.authService.getUser()?._id.toString() || "",
+		};
+		console.info("UPDATE workday", workday);
+		const updateSubscription = this.rest.updateWorkday(workday).subscribe({
+			next: (response) => {
+				if (response.success) {
+					console.log(response);
+					this.form.markAsPristine();
+				} else {
+					console.warn(response);
+				}
+			},
+			error: (error) => {
+				console.error(error);
+			},
+		});
+		this.subscriptions.add(updateSubscription);
+	}
+
+	private create(formValue: Partial<WorkdayData>) {
+		console.info("CREATE workday", formValue, this.form.valid);
+		const createSubscription = this.rest.createWorkday(formValue).subscribe({
+			next: (response) => {
+				if (response.success) {
+					console.log(response);
+					this.form.markAsPristine();
+				} else {
+					console.warn(response);
+				}
+			},
+			error: (error) => {
+				console.error(error);
+			},
+		});
+		this.subscriptions.add(createSubscription);
 	}
 }

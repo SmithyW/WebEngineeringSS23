@@ -8,10 +8,9 @@ import { ContractData, Maybe, WorkdayData } from "@shared/custom/types";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { AbstractControl } from "@angular/forms";
 import { Month } from "@shared/enums/month.enum";
-import { Contract } from "@shared/models/contract.model";
 import { KeyValue } from "@angular/common";
 import { AuthenticationService } from "src/app/services/authentication/authentication.service";
-import { TimeSpan } from "@shared/custom/timeSpan";
+import { WorkdaySaveService } from "./day-row/workday-save.service";
 
 moment.locale("de");
 
@@ -57,7 +56,8 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	constructor(
 		private dateTimeUtil: DateTimeUtilsService,
 		private rest: RestService,
-		private authService: AuthenticationService
+		private authService: AuthenticationService,
+		private saveService: WorkdaySaveService,
 	) {
 		this.currentMonth = this.dateTimeUtil.getCurrentMonth();
 		this.currentYear = new Date().getFullYear();
@@ -109,50 +109,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	save() {
-		let success = true;
-		for (let workday of this.workdayMap.values()) {
-			const date = moment({
-				year: workday.start?.getFullYear(),
-				month: workday.start?.getMonth(),
-				day: workday.start?.getDay(),
-			});
-			const fetchedWorkday = this.dataMap.get(this.getIndexFromDate(date))?.data.getValue();
-			if (fetchedWorkday) {
-				workday = {
-					_id: fetchedWorkday?._id,
-					start: workday.start || fetchedWorkday?.start,
-					end: workday.end || fetchedWorkday?.end,
-					break: workday.break || fetchedWorkday?.break,
-					user: this.authService.getUser()?._id.toString() || "",
-				};
-				console.info('update workday', workday);
-				const updateSubscription = this.rest.updateWorkday(workday).subscribe({
-					next: response => {
-						console.log(response);
-						success = success && response.success;
-					},
-					error: error => {
-						console.error(error);
-					}
-				});
-				this.subscriptions.add(updateSubscription);
-			} else {
-				console.info('create workday', workday)
-				const createSubscription = this.rest.createWorkday(workday).subscribe({
-					next: response => {
-						console.log(response);
-						success = success && response.success;
-					},
-					error: error => {
-						console.error(error);
-					}
-				});
-				this.subscriptions.add(createSubscription);
-			}
-		}
-		if (success){
-			this.forms.markAsPristine();
-		}
+		this.saveService.trigger();
 	}
 
 	sign() {
@@ -160,7 +117,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	isMonthCompleted(): boolean {
-		console.warn("TODO: sign vor Monatsende, wenn Vertragsende früher");
 		return this.dates[this.dates.length - 1].isBefore(moment.now());
 	}
 
