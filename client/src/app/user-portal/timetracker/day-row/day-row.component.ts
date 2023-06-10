@@ -68,7 +68,11 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		if (workday) {
 			this.startForm.setValue(this.getTimeFromDate(workday.start));
 			this.endForm.setValue(this.getTimeFromDate(workday.end));
-			this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(workday.break)));
+			if (workday.break) {
+				this.breakForm.setValue(this.getTimeFromDate(this.dateUtil.timespanToDate(workday.break)));
+			} else {
+				this.breakForm.setValue("");
+			}
 			this.noteForm.setValue(workday.note || "");
 		}
 		this.startForm.markAsUntouched();

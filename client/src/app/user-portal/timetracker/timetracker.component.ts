@@ -183,7 +183,10 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	private fetchWorkdays(): void {
 		const workdaySubscription = this.rest.fetchWorkdays(this.currentMonth, this.currentYear).subscribe({
 			next: (response) => {
+				console.log("workdays", response);
 				response.data?.forEach((workday) => {
+					workday.start = this.dateTimeUtil.ensureDate(workday.start);
+					workday.end = this.dateTimeUtil.ensureDate(workday.end);
 					const dayRecord = this.dataMap.get(this.getIndexFromDate(moment(workday.start)));
 					if (dayRecord) {
 						dayRecord.data.next(workday);
