@@ -109,6 +109,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	save() {
+		let success = true;
 		for (let workday of this.workdayMap.values()) {
 			const date = moment({
 				year: workday.start?.getFullYear(),
@@ -125,11 +126,32 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 					user: this.authService.getUser()?._id.toString() || "",
 				};
 				console.info('update workday', workday);
-				this.rest.updateWorkday(workday);
+				const updateSubscription = this.rest.updateWorkday(workday).subscribe({
+					next: response => {
+						console.log(response);
+						success = success && response.success;
+					},
+					error: error => {
+						console.error(error);
+					}
+				});
+				this.subscriptions.add(updateSubscription);
 			} else {
 				console.info('create workday', workday)
-				this.rest.createWorkday(workday);
+				const createSubscription = this.rest.createWorkday(workday).subscribe({
+					next: response => {
+						console.log(response);
+						success = success && response.success;
+					},
+					error: error => {
+						console.error(error);
+					}
+				});
+				this.subscriptions.add(createSubscription);
 			}
+		}
+		if (success){
+			this.forms.markAsPristine();
 		}
 	}
 
