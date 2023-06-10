@@ -27,6 +27,7 @@ export class ContractsComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(
 			this.rest.fetchContracts().subscribe({
 				next: (response) => {
+					console.log("contracts response", response);
 					this.contracts = response.data;
 				},
 				error: (err) => {
@@ -40,7 +41,7 @@ export class ContractsComponent implements OnInit, OnDestroy {
 		this.subscriptions.unsubscribe();
 	}
 
-	formatDate(date: Date): string {
+	formatDate(date: Date | string): string {
 		return this.dateUtils.formatDate(date);
 	}
 

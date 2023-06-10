@@ -53,6 +53,13 @@ export class DateTimeUtilsService {
 		}).toDate();
 	}
 
+	public ensureDate(date: Date | string): Date {
+		if (date instanceof Date) {
+			return date;
+		}
+		return moment(date).toDate();
+	}
+
 	public dateToTimespan(date: Date): TimeSpan {
 		return new TimeSpan(date.getHours(), date.getMinutes());
 	}
@@ -96,12 +103,12 @@ export class DateTimeUtilsService {
 		);
 	}
 
-	public formatDate(date: Moment | Date): string {
-		if (date instanceof Date){
+	public formatDate(date: Moment | Date | string, format: string = "DD.MM.YYYY"): string {
+		if (date instanceof Date || typeof date === 'string'){
 			date = moment(date);
 		}
 		date.locale("de");
-		return date.format("DD.MM.YYYY");
+		return date.format(format);
 	}
 
 	private getMonth(num: number): Month {

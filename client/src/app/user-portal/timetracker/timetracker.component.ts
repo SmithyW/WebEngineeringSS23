@@ -182,8 +182,8 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	private fetchWorkdays(): void {
 		const workdaySubscription = this.rest.fetchWorkdays(this.currentMonth, this.currentYear).subscribe({
-			next: (workdaysData) => {
-				workdaysData.forEach((workday) => {
+			next: (response) => {
+				response.data?.forEach((workday) => {
 					const dayRecord = this.dataMap.get(this.getIndexFromDate(moment(workday.start)));
 					if (dayRecord) {
 						dayRecord.data.next(workday);
@@ -215,8 +215,8 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	private fetchContract(): void {
 		const contractSubscription = this.rest.fetchContract(this.currentMonth, this.currentYear).subscribe({
-			next: (contractData) => {
-				this.contract = contractData;
+			next: (response) => {
+				this.contract = response.data;
 			},
 			error: (err) => {
 				console.error("Error while fetching contract", err);

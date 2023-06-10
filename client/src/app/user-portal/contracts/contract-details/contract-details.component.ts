@@ -49,31 +49,27 @@ export class ContractDetailsComponent implements OnInit, OnDestroy {
 			this.subscriptions.add(
 				this.rest.fetchContractById(contractId).subscribe({
 					next: (data) => {
-            this.contract = data;
+            console.log("contract response", data);
+            this.contract = data.data;
+            this.contract.begin = this.dateUtil.ensureDate(this.contract.begin);
+            this.contract.end = this.dateUtil.ensureDate(this.contract.end);
+            this.initForm();
 					},
 					error: (err) => {
-						console.error("Error while fetching contract with id " + contractId, err);
+            console.error("Error while fetching contract with id " + contractId, err);
 						this.error = true;
-						this.contract = {
-							_id: "weu89r7cn23",
-							begin: new Date(2022, 9, 1),
-							end: new Date(2023, 0, 31),
-							timePerWeekday: [],
-							user: "0",
-							weeklyTime: 5,
-						};
 					},
 				})
-			);
-		} else {
-      this.isNew = true;
-    }
-		this.initForm();
+        );
+      } else {
+        this.isNew = true;
+        this.initForm();
+      }
 	}
 
 	private initForm() {
-		this.beginControl = new FormControl(this.contract?.begin, Validators.required);
-		this.endControl = new FormControl(this.contract?.end, Validators.required);
+		this.beginControl = new FormControl(this.dateUtil.formatDate(this.contract?.begin || '', 'YYYY-MM-DD'), Validators.required);
+		this.endControl = new FormControl(this.dateUtil.formatDate(this.contract?.end || '', 'YYYY-MM-DD'), Validators.required);
 		this.supervisorControl = new FormControl(this.contract?.supervisor);
     if (this.contract?.timePerWeekday) {
 
@@ -126,26 +122,37 @@ export class ContractDetailsComponent implements OnInit, OnDestroy {
   save(): void {
     this.form?.updateValueAndValidity();
     if(this.isNew){
-      console.log(this.form?.value);
-      this.rest.createContract(this.form?.value).subscribe({
-        next: (response) => {
-          console.log(response);
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
+      this.create();
     } else {
       this.update();
     }
   }
 
   private create() {
-
+    this.rest.createContract(this.form?.value).subscribe({
+      next: (response) => {
+        console.log(response);
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 
   private update() {
-
+    const data: ContractData = this.form?.value;
+    data._id = this.contract!._id;
+    this.rest.updateContract(data).subscribe({
+      next: (response) => {
+        console.log(response);
+        if (response.success){
+          this.form?.markAsPristine();
+        }
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 }
 

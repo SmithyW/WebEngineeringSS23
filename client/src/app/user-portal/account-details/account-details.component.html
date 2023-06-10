@@ -1,1 +1,45 @@
-<p>account-details works!</p>
+<div class="container text-center pt-5 justify-content-center">
+    <ng-container *ngIf="error; else details">
+        <p class="text-danger fs-4">Ups, die Userdaten konnte leider nicht gefunden werden...</p>
+    </ng-container>
+    <ng-template #details>
+        <ng-template #loading>
+            <div class="spinner-border text-primary " role="status">
+                <span class="visually-hidden">Wird geladen...</span>
+            </div>
+        </ng-template>
+        <div *ngIf="user; else loading">
+            <h1 class="text-primary">Accountdetails</h1>
+            <form class="text-start">
+                <div class="row mb-3 justify-content-md-center">
+                    <label for="Vertragsbeginn" class="col-md-2 col-form-label me-3">Name:</label>
+                    <div class="col-md-auto">
+                        <input type="text" class="form-control" id="Vertragsbeginn" [formControl]="nameControl"
+                            style="width: 20em;">
+                    </div>
+                </div>
+                <div class="row mb-3 justify-content-md-center">
+                    <label for="Vertragsende" class="col-md-2 col-form-label me-3">E-Mail:</label>
+                    <div class="col-md-auto">
+                        <input type="email" class="form-control" id="Vertragsende" [formControl]="emailControl"
+                            style="width: 20em;">
+                    </div>
+                </div>
+                <div class="row mb-3 justify-content-md-center">
+                    <label for="Fachvorgesetzte/Fachvorgesetzter"
+                        class="col-md-2 col-form-label me-3">Telefon:</label>
+                    <div class="col-md-auto">
+                        <input type="tel" class="form-control" id="Fachvorgesetzte/Fachvorgesetzter"
+                            [formControl]="phoneControl" style="width: 20em;">
+                    </div>
+                </div>
+                <div class="row mb-3 justify-content-md-center">
+                    <div class="col-1">
+                        <button type="submit" (click)="update()" class="btn btn-primary me-3"
+                            [disabled]="form?.pristine || true && !form?.dirty" id="save">Speichern</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </ng-template>
+</div>
