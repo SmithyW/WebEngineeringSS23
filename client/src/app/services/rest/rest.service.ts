@@ -130,7 +130,7 @@ export class RestService {
 		}
 
 		const url = paths.REST_UPDATE_USER_URL.resolve(user._id.toString());
-		console.info("POST", url, userData);
-		return this.httpClient.post<RestResponse<UserData>>(url, userData);
+		console.info("PUT", url, userData);
+		return this.httpClient.put<RestResponse<UserData>>(url, userData);
 	}
 }

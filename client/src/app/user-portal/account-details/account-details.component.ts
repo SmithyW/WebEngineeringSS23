@@ -36,10 +36,11 @@ export class AccountDetailsComponent {
           console.log("user response", data);
 					this.user = data.data;
           this.initForm();
+          this.error = false;
 				},
 				error: (err) => {
           console.error("Error while fetching user with id " + userId, err);
-					//this.error = true;
+					this.error = true;
           this.user = this.authService.getUser();
           this.initForm();
 				},
@@ -64,12 +65,23 @@ export class AccountDetailsComponent {
 
 	update() {
     if (this.user) {
-      this.rest.updateUser({
+      const subscription = this.rest.updateUser({
         _id: this.user._id,
         name: this.nameControl.value,
         email: this.emailControl.value,
         phone: this.phoneControl.value
+      }).subscribe({
+        next: response => {
+          console.log(response);
+          if (response.success){
+            this.form?.markAsPristine();
+          }
+        },
+        error: error => {
+          console.error(error);
+        }
       });
+      this.subscriptions.add(subscription);
     } else {
       console.error("cannot update user becauce this.user is undefined");
     }
