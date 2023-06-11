@@ -18,6 +18,14 @@ export class REST_FETCH_WORKDAYS_URL {
   }
 }
 
+export class REST_SIGN_WORKDAYS_URL {
+  static readonly url = REST_BASE_URL + '/users/{id}/workdays/sign';
+
+  public static resolve(userid: string): string {
+    return REST_SIGN_WORKDAYS_URL.url.replace('{id}', userid);
+  }
+}
+
 export class REST_UPDATE_WORKDAY_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/workdays/{id}';
 

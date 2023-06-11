@@ -117,8 +117,17 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	sign() {
-		console.warn("TODO: sign");
-	}
+	  const signWorkdaysSubscription =
+      this.rest.signWorkdays(this.currentMonth, this.currentYear)
+        .subscribe({
+          next: (response) => {
+            console.log(response);
+          },
+          error: (error) => {
+            console.log(error);
+          }
+        });
+  }
 
 	isMonthCompleted(): boolean {
 		return this.dates[this.dates.length - 1].isBefore(moment.now());
