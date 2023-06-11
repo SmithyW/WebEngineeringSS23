@@ -145,6 +145,36 @@ export class WorkdayController {
     return response.status(HttpStatus.OK).json({ message: "Not implemented yet" });
   }
 
+  @Post('/sign')
+  @HttpCode(HttpStatus.OK)
+  signMonth(
+    @Param('userId') userId: string,
+    @Body() signRequestDto: any,
+    @Res() response,
+  ): Promise<IBaseResponse<any>> {
+    if (!userId) {
+      return response
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: 'No userId was provided' });
+    }
+
+    return this.workdayService.sign(signRequestDto.month, signRequestDto.year)
+      .then((res: boolean) => {
+        if (res) {
+          return response.status(HttpStatus.OK).json({
+            message: 'Signing was successful',
+          });
+        }
+        return response.status(HttpStatus.OK).json({
+          message: 'Signing was not successful',
+        });
+      })
+      .catch(() => {
+        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'Error',
+        });
+      });
+  }
 
   @Delete(':workdayId')
   @HttpCode(HttpStatus.OK)

@@ -49,6 +49,21 @@ export class WorkdayService {
     return this.workdayModel.findOne({ _id: id }).populate('user').exec();
   }
 
+  sign(month: number, year: number): Promise<boolean> {
+    const today: Date = new Date(Date.now());
+    const monthToSign: Date = new Date(year, month + 1, 0);
+
+    if (today <= monthToSign) {
+      return new Promise((resolve) => {
+        resolve(false);
+      });
+    }
+    // #TODO: Logik einbauen
+    return new Promise((resolve) => {
+      resolve(true);
+    });
+  }
+
   update(id: string, updateWorkdayDto: UpdateWorkdayDto): Promise<Workday> {
     const updatedWorkday = new this.workdayModel(updateWorkdayDto);
     updatedWorkday._id = id;
