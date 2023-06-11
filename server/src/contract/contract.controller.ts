@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpStatus, HttpCode, Res, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Delete,
+  HttpStatus,
+  HttpCode,
+  Res,
+  Put,
+} from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -41,12 +53,21 @@ export class ContractController {
   @HttpCode(HttpStatus.OK)
   findAll(
     @Param('userId') userId: string,
+    @Query('month') month: string,
+    @Query('year') year: string,
     @Res() response,
   ): Promise<IBaseResponse<Contract[] | any>> {
-    let filter = {};
+    let filter: { user?: string, month?: number, year?: number } = {};
     if (userId) {
       filter = { user: userId };
     }
+    if (year) {
+      filter.year = parseInt(year);
+    }
+    if (month) {
+      filter.month = parseInt(month);
+    }
+
     return this.contractService.findAll(filter).then((contracts: Contract[]) => {
         const res: IBaseResponse<Contract[]> = {
         success: true,
