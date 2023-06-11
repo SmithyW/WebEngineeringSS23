@@ -23,7 +23,9 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	readonly HOLIDAY = DayType.HOLIDAY;
 	readonly WEEKEND = DayType.WEEKEND;
 	readonly WORKDAY = DayType.WORKDAY;
+	readonly FUTURE = DayType.FUTURE;
 
+  readonly TODAY = new Date(new Date().setHours(0,0,0,0));
 	data: DayRecord[] = [];
 	forms: FormArray<AbstractControl> = new FormArray<AbstractControl>([]);
 	dateForm: FormGroup | undefined;
@@ -86,9 +88,11 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 			return DayType.HOLIDAY;
 		} else if (this.dateTimeUtil.isWeekend(day)) {
 			return DayType.WEEKEND;
+		} else if (moment(day).toDate() > this.TODAY) {
+			return DayType.FUTURE;
 		} else {
-			return DayType.WORKDAY;
-		}
+      return DayType.WORKDAY;
+    }
 	}
 
 	getHolidayName(day: Moment): string {
@@ -223,4 +227,5 @@ enum DayType {
 	WORKDAY,
 	WEEKEND,
 	HOLIDAY,
+  FUTURE
 }
