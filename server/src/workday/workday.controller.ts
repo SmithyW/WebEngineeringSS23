@@ -14,29 +14,29 @@ export class WorkdayController {
   create(
     @Param('userId') userId: string,
     @Body() createWorkdayDto: CreateWorkdayDto,
-    @Res() response
-    ): Promise<IBaseResponse<Workday | any>> {
-      if (userId) {
-        createWorkdayDto.user = userId;
-      }
-      return this.workdayService.create(createWorkdayDto).then((workday: Workday) => {
-          const res: IBaseResponse<Workday> = {
-            success: true,
-            message: 'Workday created',
-            data: workday
-          };
-          return response.status(HttpStatus.CREATED).json(res);
-        }
-      )
-      .catch((err) => {
-        const res: IBaseResponse<any> = {
-          success: false,
-          message: 'An error occured while creating the workday',
-          data: err
+    @Res() response,
+  ): Promise<IBaseResponse<Workday | any>> {
+    if (userId) {
+      createWorkdayDto.user = userId;
+    }
+    return this.workdayService
+      .create(createWorkdayDto)
+      .then((workday: Workday) => {
+        const res: IBaseResponse<Workday> = {
+          success: true,
+          message: 'Workday created',
+          data: workday,
         };
-        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
-      }
-    );
+        return response.status(HttpStatus.CREATED).json(res);
+    })
+    .catch((err) => {
+      const res: IBaseResponse<any> = {
+        success: false,
+        message: 'An error occured while creating the workday',
+          data: err
+      };
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
+    });
   }
 
   @Get()
@@ -56,16 +56,14 @@ export class WorkdayController {
         data: workdays
       };
       return response.status(HttpStatus.OK).json(res);
-    }
-    ).catch((err) => {
+    }).catch((err) => {
       const res: IBaseResponse<any> = {
         success: false,
         message: 'An error occured while finding the workdays',
-        data: err
+          data: err
       };
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
-    }
-  );
+    });
   }
 
   @Get(':workdayId')
@@ -73,24 +71,22 @@ export class WorkdayController {
   findOne(
     @Param('workdayId') workdayId: string,
     @Res() response
-    ): Promise<IBaseResponse<Workday | any>> {
-      return this.workdayService.findOne(workdayId).then((workday: Workday) => {
-        const res: IBaseResponse<Workday> = {
-          success: true,
-          message: 'Workday found',
-          data: workday
-        };
-        return response.status(HttpStatus.OK).json(res);
-      }
-      ).catch((err) => {
-        const res: IBaseResponse<any> = {
-          success: false,
-          message: 'An error occured while finding the workday',
+  ): Promise<IBaseResponse<Workday | any>> {
+    return this.workdayService.findOne(workdayId).then((workday: Workday) => {
+      const res: IBaseResponse<Workday> = {
+        success: true,
+        message: 'Workday found',
+        data: workday
+      };
+      return response.status(HttpStatus.OK).json(res);
+    }).catch((err) => {
+      const res: IBaseResponse<any> = {
+        success: false,
+        message: 'An error occured while finding the workday',
           data: err
-        };
-        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
-      }
-    );
+      };
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
+    });
   }
 
   @Put(':workdayId')
@@ -99,24 +95,22 @@ export class WorkdayController {
     @Param('workdayId') workdayId: string,
     @Body() updateWorkdayDto: UpdateWorkdayDto,
     @Res() response
-    ): Promise<IBaseResponse<Workday | any>> {
-      return this.workdayService.update(workdayId, updateWorkdayDto).then((workday: Workday) => {
-        const res: IBaseResponse<Workday> = {
-          success: true,
-          message: 'Workday updated',
-          data: workday
-        };
-        return response.status(HttpStatus.OK).json(res);
-      }
-      ).catch((err) => {
-        const res: IBaseResponse<any> = {
-          success: false,
-          message: 'An error occured while updating the workday',
+  ): Promise<IBaseResponse<Workday | any>> {
+    return this.workdayService.update(workdayId, updateWorkdayDto).then((workday: Workday) => {
+      const res: IBaseResponse<Workday> = {
+        success: true,
+        message: 'Workday updated',
+        data: workday
+      };
+      return response.status(HttpStatus.OK).json(res);
+    }).catch((err) => {
+      const res: IBaseResponse<any> = {
+        success: false,
+        message: 'An error occured while updating the workday',
           data: err
-        };
-        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
-      }
-    );
+      };
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
+    });
   }
 
   @Post('/multiple')
@@ -125,10 +119,10 @@ export class WorkdayController {
     @Param('userId') userId: string,
     @Body() updateWorkdaysDto: UpdateWorkdayDto[],
     @Res() response
-    ): Promise<IBaseResponse<Workday[] | any>> {
-      // #TODO;
-      return response.status(HttpStatus.OK).json({ message: "Not implemented yet" });
-    }
+  ): Promise<IBaseResponse<Workday[] | any>> {
+    // #TODO;
+    return response.status(HttpStatus.OK).json({ message: "Not implemented yet" });
+  }
 
 
   @Delete(':workdayId')
@@ -136,23 +130,21 @@ export class WorkdayController {
   remove(
     @Param('workdayId') workdayId: string,
     @Res() response
-    ): Promise<IBaseResponse<any>> {
-      return this.workdayService.remove(workdayId).then(() => {
-        const res: IBaseResponse<any> = {
-          success: true,
-          message: 'Workday deleted',
-          data: null
-        };
-        return response.status(HttpStatus.OK).json(res);
-      }
-      ).catch((err) => {
-        const res: IBaseResponse<any> = {
-          success: false,
-          message: 'An error occured while deleting the workday',
+  ): Promise<IBaseResponse<any>> {
+    return this.workdayService.remove(workdayId).then(() => {
+      const res: IBaseResponse<any> = {
+        success: true,
+        message: 'Workday deleted',
+        data: null
+      };
+      return response.status(HttpStatus.OK).json(res);
+    }).catch((err) => {
+      const res: IBaseResponse<any> = {
+        success: false,
+        message: 'An error occured while deleting the workday',
           data: err
-        };
-        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
-      }
-    );
+      };
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(res);
+    });
   }
 }
