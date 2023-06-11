@@ -3,7 +3,7 @@ import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { Contract, ContractDocument } from '@shared/models/contract.model';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class ContractService {
@@ -16,8 +16,34 @@ export class ContractService {
     return createdContract.save();
   }
 
-  findAll(filter: any): Promise<Contract[]> {
-    return this.contractModel.find(filter)
+  findAll(filter: { user?: string, month?: number, year?: number }): Promise<Contract[]> {
+    const mongoQueryFilter: any = {
+      $and: []
+    };
+    if (filter.user) {
+      mongoQueryFilter.$and.push({
+        user: new Types.ObjectId(filter.user),
+      });
+    }
+
+    if (filter.year) {
+      // First day of the year
+      let searchDateStart: Date = new Date(filter.year, 0);
+      // Last day of the year
+      let searchDateEnd: Date = new Date(filter.year, 11, 31);
+      if (filter.month) {
+        searchDateStart = new Date(filter.year, filter.month - 1, 1);
+        searchDateEnd = new Date(filter.year, filter.month, 0);
+      }
+
+      mongoQueryFilter.$and.push({
+        $and: [
+          { begin: { $lte: searchDateEnd } },
+          { end: { $gte: searchDateStart } },
+        ],
+      });
+    }
+    return this.contractModel.find(mongoQueryFilter)
       .populate('user')
       .populate('supervisor')
       .exec();
