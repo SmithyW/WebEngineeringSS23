@@ -16,7 +16,7 @@ import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 import { Workday } from '@shared/models/workday.model';
-import { SignRequestDto } from './dto/sign-request.dto';
+import { SignRequestDto } from '../signed-month/dto/sign-request.dto';
 
 @Controller(['workdays', 'users/:userId/workdays'])
 export class WorkdayController {
@@ -165,17 +165,18 @@ export class WorkdayController {
       });
     }
 
-    return this.workdayService.sign(signRequestDto.month, signRequestDto.year)
+    return this.workdayService.sign(userId, signRequestDto.month, signRequestDto.year)
       .then((res: { success: boolean, message?: string }) => {
         return response.status(HttpStatus.OK).json({
           success: res.success,
           message: res.message,
         });
       })
-      .catch(() => {
+      .catch((error) => {
         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: 'Error',
+          error: error
         });
       });
   }
