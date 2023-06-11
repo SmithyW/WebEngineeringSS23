@@ -24,7 +24,7 @@ export class RestService {
 		}
 
 		const url = paths.REST_FETCH_WORKDAYS_URL.resolve(user._id.toString());
-		const queryParams = paths.REST_FETCH_WORKDAYS_URL.queryParams(month, year);
+		const queryParams = paths.REST_FETCH_WORKDAYS_URL.queryParams(month + 1, year);
 		const options = {
 			params: queryParams,
 		};
@@ -62,7 +62,7 @@ export class RestService {
 		}
 
 		const url = paths.REST_FETCH_CONTRACT_URL.resolve(user._id.toString());
-		const queryParams = paths.REST_FETCH_CONTRACT_URL.queryParams(month, year);
+		const queryParams = paths.REST_FETCH_CONTRACT_URL.queryParams(month + 1, year);
 		const options = {
 			params: queryParams,
 		};
