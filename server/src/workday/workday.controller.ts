@@ -16,6 +16,7 @@ import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
 import { IBaseResponse } from '@shared/interfaces/responses/baseResponse.interface';
 import { Workday } from '@shared/models/workday.model';
+import { SignRequestDto } from '../signed-month/dto/sign-request.dto';
 
 @Controller(['workdays', 'users/:userId/workdays'])
 export class WorkdayController {
@@ -149,7 +150,7 @@ export class WorkdayController {
   @HttpCode(HttpStatus.OK)
   signMonth(
     @Param('userId') userId: string,
-    @Body() signRequestDto: any,
+    @Body() signRequestDto: SignRequestDto,
     @Res() response,
   ): Promise<IBaseResponse<any>> {
     if (!userId) {
@@ -157,21 +158,25 @@ export class WorkdayController {
         .status(HttpStatus.BAD_REQUEST)
         .json({ message: 'No userId was provided' });
     }
+    if (!signRequestDto.month || !signRequestDto.year) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: 'month AND year are required in the request body',
+      });
+    }
 
-    return this.workdayService.sign(signRequestDto.month, signRequestDto.year)
-      .then((res: boolean) => {
-        if (res) {
-          return response.status(HttpStatus.OK).json({
-            message: 'Signing was successful',
-          });
-        }
+    return this.workdayService.sign(userId, signRequestDto.month, signRequestDto.year)
+      .then((res: { success: boolean, message?: string }) => {
         return response.status(HttpStatus.OK).json({
-          message: 'Signing was not successful',
+          success: res.success,
+          message: res.message,
         });
       })
-      .catch(() => {
+      .catch((error) => {
         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          success: false,
           message: 'Error',
+          error: error
         });
       });
   }

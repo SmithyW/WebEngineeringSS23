@@ -6,6 +6,7 @@ import { ContractModule } from './contract/contract.module';
 import { UserModule } from './user/user.module';
 import { WorkdayModule } from './workday/workday.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SignedMonthModule } from './signed-month/signed-month.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     ContractModule,
     UserModule,
-    WorkdayModule
+    WorkdayModule,
+    SignedMonthModule
   ],
   controllers: [AppController],
   providers: [AppService],
