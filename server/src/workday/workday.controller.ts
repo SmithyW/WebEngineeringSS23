@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, Res, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Res,
+  Put,
+} from '@nestjs/common';
 import { WorkdayService } from './workday.service';
 import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
@@ -43,18 +55,27 @@ export class WorkdayController {
   @HttpCode(HttpStatus.OK)
   findAll(
     @Param('userId') userId: string,
+    @Query('month') month: number,
+    @Query('year') year: number,
     @Res() response
   ): Promise<IBaseResponse<Workday[] | any>> {
-    let filter = {};
+    let filter: { user?: string, month?: number, year?: number } = {};
     if (userId) {
       filter = { user: userId };
     }
+    if (month) {
+      filter['month'] = month;
+    }
+    if (year) {
+      filter['year'] = year;
+    }
+
     return this.workdayService.findAll(filter).then((workdays: Workday[]) => {
       const res: IBaseResponse<Workday[]> = {
         success: true,
         message: 'Workdays found',
         data: workdays
-      };
+    };
       return response.status(HttpStatus.OK).json(res);
     }).catch((err) => {
       const res: IBaseResponse<any> = {

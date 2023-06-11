@@ -3,20 +3,46 @@ import { CreateWorkdayDto } from './dto/create-workday.dto';
 import { UpdateWorkdayDto } from './dto/update-workday.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Workday, WorkdayDocument } from '@shared/models/workday.model';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class WorkdayService {
-
-  constructor(@InjectModel(Workday.name) private workdayModel: Model<Workday>) {}
+  constructor(
+    @InjectModel(Workday.name) private workdayModel: Model<Workday>,
+  ) {}
 
   create(createWorkdayDto: CreateWorkdayDto): Promise<Workday> {
     const createdWorkday: WorkdayDocument = new this.workdayModel(createWorkdayDto);
     return createdWorkday.save();
   }
 
-  findAll(filter: any): Promise<Workday[]> {
-    return this.workdayModel.find(filter).populate('user').exec();
+  findAll(filter: { user?: string, month?: number, year?: number }): Promise<Workday[]> {
+    const mongoQueryFilter: any = {
+      $and: []
+    };
+    if (filter.user) {
+      mongoQueryFilter.$and.push({
+        user: new Types.ObjectId(filter.user),
+      });
+    }
+
+    if (filter.year) {
+      let exprArr = { $and: [] };
+      const exprYear = { $eq: [{ $year: '$start' }, filter.year] };
+      exprArr.$and.push(exprYear);
+
+      let exprMonth = null;
+
+      if (filter.month) {
+        exprMonth = { $eq: [{ $month: '$start' }, filter.month] };
+        exprArr = exprMonth;
+      }
+
+      mongoQueryFilter.$and.push({
+        $expr: exprArr,
+      });
+    }
+    return this.workdayModel.find(mongoQueryFilter).populate('user').exec();
   }
 
   findOne(id: string): Promise<Workday> {
