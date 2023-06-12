@@ -33,6 +33,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	noteForm: FormControl<string>;
 	workingTime: string = "";
 	plannedTime: number = 0;
+  plannedTimeStr: string = "";
 
 	private currentTime: moment.Duration = moment.duration(0);
 	private startTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
@@ -141,7 +142,8 @@ export class DayRowComponent implements OnInit, OnDestroy {
 			throw new Error("missing dayRecord?.day");
 		}
 		this.plannedTime = contractTimeMap[this.dayRecord?.day.isoWeekday()] || 0;
-	}
+	  this.plannedTimeStr = this.formatDurationAsTime(moment.duration(this.plannedTime, 'hours'));
+  }
 
 	private subscripeForms() {
 		this.subscriptions.add(

@@ -1,20 +1,37 @@
 <ng-container *ngIf="dayRecord !== undefined">
     <td class="align-middle d-none d-lg-table-cell">{{getWeekday(dayRecord.day)}}</td>
     <td class="fs-6 align-middle">{{formatDate(dayRecord.day)}}</td>
-    <td class="mx-auto">
+    <ng-container *ngIf="disabled; then isDisabled; else isActive">
+    </ng-container>
+
+    <ng-template #isActive>
+      <td class="mx-auto">
         <input type="time" class="form-control text-center mx-auto" [formControl]="startForm" style="width: 5em;"
-            [readonly]="disabled">
-    </td>
-    <td class="">
+        [readonly]="disabled">
+      </td>
+      <td class="">
         <input type="time" class="form-control text-center mx-auto" [formControl]="endForm" style="width: 5em;"
-            [readonly]="disabled">
-    </td>
-    <td>
+        [readonly]="disabled">
+      </td>
+      <td>
         <input type="time" class="form-control text-center mx-auto" [formControl]="breakForm" style="width: 5em;"
-            [readonly]="disabled">
-    </td>
+        [readonly]="disabled">
+      </td>
+    </ng-template>
+
+    <ng-template #isDisabled>
+      <td class="fs-6 mx-auto align-middle text-center">
+        {{ startForm.value }}
+      </td>
+      <td class="fs-6 mx-auto align-middle text-center">
+        {{ endForm.value }}
+      </td>
+      <td class="fs-6 mx-auto align-middle text-center">
+        {{ breakForm.value }}
+      </td>
+    </ng-template>
     <td class="fs-6 align-middle text-center">{{workingTime}}</td>
-    <td class="fs-6 align-middle text-center d-none d-lg-table-cell">{{plannedTime}}</td>
+    <td class="fs-6 align-middle text-center d-none d-lg-table-cell">{{plannedTimeStr}}</td>
     <td class="fs-6 align-middle text-center d-none d-sm-table-cell">{{getTimeDiff()}}</td>
     <td class="d-none d-md-table-cell">
         <div class="">
