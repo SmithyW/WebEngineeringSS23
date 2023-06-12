@@ -28,7 +28,6 @@
     "@nestjs/platform-express": "^9.0.0",
     "date-and-time": "^3.0.0",
     "mongoose": "^7.1.0",
-    "object-hash": "^3.0.0",
     "rxjs": "^7.2.0"
   },
   "devDependencies": {

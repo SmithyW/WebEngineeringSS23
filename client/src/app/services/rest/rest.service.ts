@@ -63,7 +63,7 @@ export class RestService {
 
     const url = paths.REST_SIGN_WORKDAYS_URL.resolve(user._id.toString());
     const body: { month: number, year: number } = {
-      month,
+      month: month + 1,
       year
     }
     return this.httpClient.post<RestResponse<any>>(url, body);

@@ -21,7 +21,6 @@ export class SignedMonthService {
     const createSignedMonthDoc: SignedMonthDocument = new this.signedMonthModel(
       signedMonth,
     );
-
     return createSignedMonthDoc.save();
   }
 }
