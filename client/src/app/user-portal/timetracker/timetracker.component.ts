@@ -127,6 +127,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
             console.log(error);
           }
         });
+    this.subscriptions.add(signWorkdaysSubscription);
   }
 
 	isMonthCompleted(): boolean {
