@@ -13,52 +13,9 @@ export class SignedMonthService {
     @InjectModel(SignedMonth.name) private signedMonthModel: Model<SignedMonth>,
   ) {}
 
-  getByMonthAndYear(
-    month: number,
-    year: number,
-    user: string,
-  ): Promise<SignedMonthDocument> {
-    return this.signedMonthModel.findOne({
-      month: month,
-      year: year,
-      user: user,
-    });
-  }
-
-  findAll(
-    filter: { user?: string; month?: number; year?: number },
-    populate = true,
+  findAll(filter: { user?: string; month?: number; year?: number },
   ): Promise<SignedMonth[]> {
-    const mongoQueryFilter: any = {
-      $and: [],
-    };
-    if (filter.user) {
-      mongoQueryFilter.$and.push({
-        user: new Types.ObjectId(filter.user),
-      });
-    }
-
-    if (filter.year) {
-      let exprArr = { $and: [] };
-      const exprYear = { $eq: [{ $year: '$start' }, filter.year] };
-      exprArr.$and.push(exprYear);
-
-      let exprMonth = null;
-
-      if (filter.month) {
-        exprMonth = { $eq: [{ $month: '$start' }, filter.month] };
-        exprArr = exprMonth;
-      }
-
-      mongoQueryFilter.$and.push({
-        $expr: exprArr,
-      });
-    }
-    const mongoQuery = this.signedMonthModel.find(mongoQueryFilter);
-    if (populate) {
-      mongoQuery.populate('user');
-    }
-    return mongoQuery.exec();
+    return this.signedMonthModel.find(filter).populate('user');
   }
 
   create(signedMonth: SignedMonthDto): Promise<SignedMonth> {

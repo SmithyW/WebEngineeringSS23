@@ -36,40 +36,12 @@ export class SignedMonthController {
     return this.signedMonthService
       .findAll(filter)
       .then((months: SignedMonth[]) => {
-        if (!months || months.length <= 0) {
-          // because there is a bug with fetching only one singed month...
-          return this.signedMonthService
-            .getByMonthAndYear(Number(month), Number(year), userId)
-            .then((month: SignedMonth) => {
-              const data = [];
-              if (month) {
-                data.push(month);
-              }
-              const res: IBaseResponse<SignedMonth[]> = {
-                success: true,
-                message: 'Signed months found',
-                data: data,
-              };
-              return response.status(HttpStatus.OK).json(res);
-            })
-            .catch((err) => {
-              const res: IBaseResponse<any> = {
-                success: false,
-                message: 'An error occured while finding signed months',
-                data: err,
-              };
-              return response
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .json(res);
-            });
-        } else {
-          const res: IBaseResponse<SignedMonth[]> = {
-            success: true,
-            message: 'Signed months found',
-            data: months,
-          };
-          return response.status(HttpStatus.OK).json(res);
-        }
+        const res: IBaseResponse<SignedMonth[]> = {
+          success: true,
+          message: 'Signed months found',
+          data: months,
+        };
+        return response.status(HttpStatus.OK).json(res);
       })
       .catch((err) => {
         const res: IBaseResponse<any> = {
