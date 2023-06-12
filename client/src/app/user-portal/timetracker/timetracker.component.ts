@@ -168,7 +168,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		}
 		const hours = Math.floor(timeSum.asHours());
 		const minutes = (timeSum.asHours() % 1) * 60;
-		console.error(timeSum, { asHours: timeSum.asHours(), asMinutes: timeSum.asMinutes() });
 		return (
 			hours.toLocaleString(undefined, {
 				maximumFractionDigits: 0
