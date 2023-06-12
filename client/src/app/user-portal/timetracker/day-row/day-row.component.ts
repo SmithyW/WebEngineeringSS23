@@ -20,6 +20,7 @@ import { RestService } from "src/app/services/rest/rest.service";
 })
 export class DayRowComponent implements OnInit, OnDestroy {
 	@Input() dayRecord: DayRecord | undefined;
+	@Input() disabled: boolean = false;
 
 	@Output() rowForm: EventEmitter<FormArray> = new EventEmitter();
 	@Output() timeChanges: EventEmitter<KeyValue<Moment, moment.Duration>> = new EventEmitter();

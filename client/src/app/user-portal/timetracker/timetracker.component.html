@@ -95,7 +95,7 @@
             </ng-container>
             <ng-container *ngSwitchCase="WORKDAY">
               <tr app-day-row [dayRecord]="dayRecord" (rowForm)="addRowForm($event)" (timeChanges)="updateTime($event)"
-                (workday)="updateWorkday($event)"></tr>
+                (workday)="updateWorkday($event)" [disabled]="isSignedMonth"></tr>
             </ng-container>
             <ng-container *ngSwitchCase="FUTURE">
               <tr app-disabled-day-row [dayRecord]="dayRecord" class="future"></tr>
@@ -108,12 +108,15 @@
 
   <div class="position-sticky bottom-0">
     <div class="py-3" style="background-color: white;">
-      <button type="button" (click)="save()" class="btn btn-primary me-3" [disabled]="forms.pristine"
+      <button type="button" (click)="save()" class="btn btn-primary me-3" [disabled]="forms.pristine || isSignedMonth"
         id="save">Speichern</button>
       <button type="button" (click)="sign()" class="btn btn-outline-secondary"
-        [disabled]="forms.pristine || !isMonthCompleted()" id="sign">Signieren und Freigeben</button>
+        [disabled]="!forms.pristine || !isMonthCompleted() || isSignedMonth" id="sign">Signieren und Freigeben</button>
       <label *ngIf="!isMonthCompleted()" for="sign" class="text-danger ms-2">Der Monat muss zum Signieren und Freigeben
         abgeschlossen sein.</label>
+      <div *ngIf="isSignedMonth" class="text-danger mt-2">
+        Dieser Monat wurde bereits signiert und kann nicht mehr geändert werden!
+      </div>
     </div>
   </div>
 </div>

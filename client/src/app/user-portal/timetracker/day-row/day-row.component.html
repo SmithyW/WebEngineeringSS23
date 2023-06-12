@@ -2,20 +2,23 @@
     <td class="align-middle d-none d-lg-table-cell">{{getWeekday(dayRecord.day)}}</td>
     <td class="fs-6 align-middle">{{formatDate(dayRecord.day)}}</td>
     <td class="mx-auto">
-        <input type="time" class="form-control text-center mx-auto" [formControl]="startForm" style="width: 5em;">
+        <input type="time" class="form-control text-center mx-auto" [formControl]="startForm" style="width: 5em;"
+            [readonly]="disabled">
     </td>
     <td class="">
-        <input type="time" class="form-control text-center mx-auto" [formControl]="endForm" style="width: 5em;">
+        <input type="time" class="form-control text-center mx-auto" [formControl]="endForm" style="width: 5em;"
+            [readonly]="disabled">
     </td>
     <td>
-        <input type="time" class="form-control text-center mx-auto" [formControl]="breakForm" style="width: 5em;">
+        <input type="time" class="form-control text-center mx-auto" [formControl]="breakForm" style="width: 5em;"
+            [readonly]="disabled">
     </td>
     <td class="fs-6 align-middle text-center">{{workingTime}}</td>
     <td class="fs-6 align-middle text-center d-none d-lg-table-cell"></td>
     <td class="fs-6 align-middle text-center d-none d-sm-table-cell"></td>
     <td class="d-none d-md-table-cell">
         <div class="">
-            <input class="form-control" [formControl]="noteForm">
+            <input class="form-control" [formControl]="noteForm" [readonly]="disabled">
         </div>
     </td>
 </ng-container>

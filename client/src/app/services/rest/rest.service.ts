@@ -5,7 +5,7 @@ import { Month } from "@shared/enums/month.enum";
 import { RestResponse } from "@shared/custom/responses";
 import * as paths from "@shared/rest/rest-paths";
 import { AuthenticationService } from "../authentication/authentication.service";
-import { UserData } from "@shared/custom/types";
+import { SignedMonthData, UserData } from "@shared/custom/types";
 import { ContractData } from "@shared/custom/types";
 import { WorkdayData } from "@shared/custom/types";
 
@@ -55,19 +55,34 @@ export class RestService {
 		return this.httpClient.post<RestResponse<WorkdayData>>(url, workday);
 	}
 
-  public signWorkdays(month: number, year: number): Observable<RestResponse<any>> {
-    const user = this.authServcie.getUser();
-    if (!user?._id) {
-      throw new Error("A user must be logged in!");
-    }
+	public signWorkdays(month: number, year: number): Observable<RestResponse<any>> {
+		const user = this.authServcie.getUser();
+		if (!user?._id) {
+			throw new Error("A user must be logged in!");
+		}
 
-    const url = paths.REST_SIGN_WORKDAYS_URL.resolve(user._id.toString());
-    const body: { month: number, year: number } = {
-      month: month + 1,
-      year
-    }
-    return this.httpClient.post<RestResponse<any>>(url, body);
-  }
+		const url = paths.REST_SIGN_WORKDAYS_URL.resolve(user._id.toString());
+		const body: { month: number; year: number } = {
+			month: month + 1,
+			year,
+		};
+		return this.httpClient.post<RestResponse<any>>(url, body);
+	}
+
+	public fetchSignedMonths(month: Month, year: number): Observable<RestResponse<SignedMonthData[]>> {
+		const user = this.authServcie.getUser();
+		if (!user?._id) {
+			throw new Error("A user must be logged in!");
+		}
+
+		const url = paths.REST_FETCH_SIGNED_MONTHS_URL.resolve(user._id.toString());
+		const queryParams = paths.REST_FETCH_SIGNED_MONTHS_URL.queryParams(month + 1, year);
+		const options = {
+			params: queryParams,
+		};
+		console.info("GET", url, options);
+		return this.httpClient.get<RestResponse<SignedMonthData[]>>(url, options);
+	}
 
 	public fetchContract(month: Month, year: number): Observable<RestResponse<ContractData>> {
 		const user = this.authServcie.getUser();

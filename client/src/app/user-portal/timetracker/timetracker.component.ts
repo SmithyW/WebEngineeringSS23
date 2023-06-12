@@ -46,6 +46,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		weeklyTime: 10,
 	};
 	monthSum: string = "";
+	isSignedMonth: boolean = false;
 
 	readonly months = Month;
 
@@ -202,6 +203,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	private setMonth(month: Month = this.currentMonth, year: number = this.currentYear): void {
 		this.timeMap.clear();
+		this.forms.clear();
 		this.dates = this.dateTimeUtil.getDaysInMonth(month, year);
 		this.data = [];
 		this.dataMap.clear();
@@ -215,6 +217,13 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		});
 		this.data = Array.from(this.dataMap.values());
 		this.fetchContract();
+		const signedMonthSubscription = this.rest.fetchSignedMonths(month, year).subscribe({
+			next: response => {
+				this.isSignedMonth = response.data?.length > 0;
+			},
+			error: error => console.error("error while fetching signed month", error)
+		});
+		this.subscriptions.add(signedMonthSubscription);
 	}
 
 	private fetchContract(): void {

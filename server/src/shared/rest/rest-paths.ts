@@ -26,6 +26,21 @@ export class REST_SIGN_WORKDAYS_URL {
   }
 }
 
+export class REST_FETCH_SIGNED_MONTHS_URL {
+  static readonly url = REST_BASE_URL + '/users/{userId}/signed-months';
+
+  public static resolve(userid: string): string {
+    return REST_FETCH_SIGNED_MONTHS_URL.url.replace('{userId}', userid);
+  }
+
+  public static queryParams(month: Month, year: number): MonthYear {
+    return {
+      month: month,
+      year: year,
+    };
+  }
+}
+
 export class REST_UPDATE_WORKDAY_URL {
   static readonly url = REST_BASE_URL + '/users/{userId}/workdays/{id}';
 
