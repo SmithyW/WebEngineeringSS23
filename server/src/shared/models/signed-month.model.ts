@@ -30,4 +30,4 @@ export class SignedMonth {
 }
 
 export const SignedMonthSchema = SchemaFactory.createForClass(SignedMonth);
-SignedMonthSchema.index({ month: 1, year: 1 }, { unique: true });
+SignedMonthSchema.index({ month: 1, year: 1, user: 1 }, { unique: true });
