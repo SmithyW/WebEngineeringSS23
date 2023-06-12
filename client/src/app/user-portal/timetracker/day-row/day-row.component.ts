@@ -2,7 +2,7 @@ import { KeyValue } from "@angular/common";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { FormArray, FormControl, Validators } from "@angular/forms";
 import { TimeSpan } from "@shared/custom/timeSpan";
-import { Maybe, WorkdayData } from "@shared/custom/types";
+import { ContractData, Maybe, WorkdayData } from "@shared/custom/types";
 import { Workday } from "@shared/models/workday.model";
 import * as moment from "moment";
 import { Moment } from "moment";
@@ -21,6 +21,7 @@ import { RestService } from "src/app/services/rest/rest.service";
 export class DayRowComponent implements OnInit, OnDestroy {
 	@Input() dayRecord: DayRecord | undefined;
 	@Input() disabled: boolean = false;
+	@Input() contractTimeMap: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 
 	@Output() rowForm: EventEmitter<FormArray> = new EventEmitter();
 	@Output() timeChanges: EventEmitter<KeyValue<Moment, moment.Duration>> = new EventEmitter();
@@ -31,7 +32,9 @@ export class DayRowComponent implements OnInit, OnDestroy {
 	breakForm: FormControl<string>;
 	noteForm: FormControl<string>;
 	workingTime: string = "";
+	plannedTime: number = 0;
 
+	private currentTime: moment.Duration = moment.duration(0);
 	private startTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
 	private endTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
 	private breakTime = new BehaviorSubject<Maybe<moment.Duration>>(undefined);
@@ -81,6 +84,16 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		return date.format("DD.MM.YYYY");
 	}
 
+	formatDurationAsTime(time: moment.Duration): string {
+		return this.dateUtil.formatDurationAsTime(time);
+	}
+
+	getTimeDiff(): string {
+		const plan = moment.duration({ hours: this.plannedTime });
+		const diff = moment.duration(this.currentTime).subtract(plan);
+		return this.formatDurationAsTime(diff);
+	}
+
 	private initFormValues(workday: Workday | undefined): void {
 		if (workday) {
 			this.startForm.setValue(this.getTimeFromDate(workday.start));
@@ -115,6 +128,19 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		this.subscriptions.add(this.breakTime.subscribe(onTimeChange));
 		this.subscriptions.add(this.note.subscribe(updateWorkday));
 		this.subscriptions.add(this.dayRecord?.data.subscribe({ next: (workday) => this.initFormValues(workday) }));
+		this.subscriptions.add(this.contractTimeMap.subscribe({
+			next: timeMap => {
+				this.setPlannedTime(timeMap);
+			},
+			error: error => console.error(error)
+		}))
+	}
+
+	private setPlannedTime(contractTimeMap: number[]): void {
+		if (!this.dayRecord?.day){
+			throw new Error("missing dayRecord?.day");
+		}
+		this.plannedTime = contractTimeMap[this.dayRecord?.day.isoWeekday()] || 0;
 	}
 
 	private subscripeForms() {
@@ -155,6 +181,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 				newWorkingTime = end.subtract(start);
 			}
 		}
+		this.currentTime = moment.duration(newWorkingTime);
 		if (newWorkingTime.asMinutes() < 0) {
 			newWorkingTime = moment.duration(0);
 			this.workingTime = "Ungültige Zeit, bitte Eingabe prüfen!";
@@ -229,7 +256,7 @@ export class DayRowComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private update(formValue: Omit<WorkdayData, '_id' | 'user'>, fetchedWorkday: WorkdayData) {
+	private update(formValue: Omit<WorkdayData, "_id" | "user">, fetchedWorkday: WorkdayData) {
 		const workday: WorkdayData = {
 			_id: fetchedWorkday?._id,
 			start: formValue.start,

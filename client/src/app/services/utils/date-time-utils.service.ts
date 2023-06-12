@@ -95,11 +95,24 @@ export class DateTimeUtilsService {
 		return day.isoWeekday() > 5;
 	}
 
-	public formatDurationAsTime(duration: moment.Duration): string {
+	public formatDurationAsTime(time: moment.Duration): string{
+		let hours;
+		if (time.asHours() >= 0){
+			hours = Math.floor(time.asHours());
+		} else {
+			hours = Math.ceil(time.asHours());
+		}
+		const minutes = (time.asHours() % 1) * 60;
 		return (
-			duration.hours().toLocaleString("de", { minimumIntegerDigits: 2 }) +
+			hours.toLocaleString(undefined, {
+				maximumFractionDigits: 0
+			}) +
 			":" +
-			duration.minutes().toLocaleString("de", { minimumIntegerDigits: 2 })
+			minutes.toLocaleString(undefined, {
+				maximumFractionDigits: 0,
+				minimumIntegerDigits: 2,
+				signDisplay: 'never',
+			})
 		);
 	}
 

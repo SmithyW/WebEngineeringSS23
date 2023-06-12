@@ -84,7 +84,7 @@ export class RestService {
 		return this.httpClient.get<RestResponse<SignedMonthData[]>>(url, options);
 	}
 
-	public fetchContract(month: Month, year: number): Observable<RestResponse<ContractData>> {
+	public fetchContract(month: Month, year: number): Observable<RestResponse<ContractData[]>> {
 		const user = this.authServcie.getUser();
 		if (!user?._id) {
 			throw new Error("A user must be logged in!");
@@ -96,7 +96,7 @@ export class RestService {
 			params: queryParams,
 		};
 		console.info("GET", url, options);
-		return this.httpClient.get<RestResponse<ContractData>>(url, options);
+		return this.httpClient.get<RestResponse<ContractData[]>>(url, options);
 	}
 
 	public fetchContractById(contractId: string): Observable<RestResponse<ContractData>> {

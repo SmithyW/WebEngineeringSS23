@@ -14,8 +14,8 @@
             [readonly]="disabled">
     </td>
     <td class="fs-6 align-middle text-center">{{workingTime}}</td>
-    <td class="fs-6 align-middle text-center d-none d-lg-table-cell"></td>
-    <td class="fs-6 align-middle text-center d-none d-sm-table-cell"></td>
+    <td class="fs-6 align-middle text-center d-none d-lg-table-cell">{{plannedTime}}</td>
+    <td class="fs-6 align-middle text-center d-none d-sm-table-cell">{{getTimeDiff()}}</td>
     <td class="d-none d-md-table-cell">
         <div class="">
             <input class="form-control" [formControl]="noteForm" [readonly]="disabled">

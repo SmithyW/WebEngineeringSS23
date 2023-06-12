@@ -1,15 +1,13 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Moment } from "moment";
-import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
-import { RestService } from "src/app/services/rest/rest.service";
-import { BehaviorSubject, Subscription, windowTime } from "rxjs";
-import * as moment from "moment";
-import { ContractData, Maybe, WorkdayData } from "@shared/custom/types";
-import { FormArray, FormControl, FormGroup } from "@angular/forms";
-import { AbstractControl } from "@angular/forms";
-import { Month } from "@shared/enums/month.enum";
 import { KeyValue } from "@angular/common";
-import { AuthenticationService } from "src/app/services/authentication/authentication.service";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
+import { ContractData, Maybe, WorkdayData } from "@shared/custom/types";
+import { Month } from "@shared/enums/month.enum";
+import * as moment from "moment";
+import { Moment } from "moment";
+import { BehaviorSubject, Subscription } from "rxjs";
+import { RestService } from "src/app/services/rest/rest.service";
+import { DateTimeUtilsService } from "src/app/services/utils/date-time-utils.service";
 import { WorkdaySaveService } from "./day-row/workday-save.service";
 
 moment.locale("de");
@@ -32,21 +30,12 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	currentMonth: Month;
 	currentYear: number;
 	yearSelect: number;
-	contract: Maybe<ContractData> = {
-		_id: "",
-		begin: new Date(2023, 3, 1),
-		end: new Date(2023, 6, 15),
-		timePerWeekday: [
-			{
-				time: 4,
-				weekday: 2,
-			},
-		],
-		user: "userId",
-		weeklyTime: 10,
-	};
-	monthSum: string = "";
+	contract: Maybe<ContractData>;
+	hasContract: boolean = true;
 	isSignedMonth: boolean = false;
+	plannedTime: number = 0;
+	currentTime: moment.Duration = moment.duration(0);
+	contractTimeMap: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 
 	readonly months = Month;
 
@@ -59,7 +48,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	constructor(
 		private dateTimeUtil: DateTimeUtilsService,
 		private rest: RestService,
-		private authService: AuthenticationService,
 		private saveService: WorkdaySaveService
 	) {
 		this.currentMonth = this.dateTimeUtil.getCurrentMonth();
@@ -73,7 +61,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.dateForm = new FormGroup({
 			CalMonth: new FormControl(moment()),
 		});
-		this.monthSum = this.calculateMonthSum();
+		this.calculateMonthSum();
 	}
 
 	ngOnDestroy(): void {
@@ -106,7 +94,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 
 	updateTime(timeRecord: KeyValue<Moment, moment.Duration>) {
 		this.timeMap.set(timeRecord.key, timeRecord.value);
-		this.monthSum = this.calculateMonthSum();
+		this.calculateMonthSum();
 	}
 
 	updateWorkday(workday: KeyValue<Moment, Partial<WorkdayData>>) {
@@ -161,7 +149,17 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.fetchWorkdays();
 	}
 
-	private calculateMonthSum(): string {
+	getTimeDiff(): string {
+		const plan = moment.duration({hours: this.plannedTime});
+		const diff = moment.duration(this.currentTime).subtract(plan);
+		return this.formatDurationAsTime(diff);
+	}
+
+	formatDurationAsTime(time: moment.Duration): string{
+		return this.dateTimeUtil.formatDurationAsTime(time);
+	}
+
+	private calculateMonthSum(): void {
 		let timeSum: moment.Duration = moment.duration(0);
 		if (this.timeMap.size > 0) {
 			this.timeMap.forEach((value, key) => {
@@ -170,18 +168,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 				}
 			});
 		}
-		const hours = Math.floor(timeSum.asHours());
-		const minutes = (timeSum.asHours() % 1) * 60;
-		return (
-			hours.toLocaleString(undefined, {
-				maximumFractionDigits: 0
-			}) +
-			":" +
-			minutes.toLocaleString(undefined, {
-				maximumFractionDigits: 0,
-				minimumIntegerDigits: 2,
-			})
-		);
+		this.currentTime = timeSum;
 	}
 
 	private fetchWorkdays(): void {
@@ -208,6 +195,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		this.timeMap.clear();
 		this.forms.clear();
 		this.dates = this.dateTimeUtil.getDaysInMonth(month, year);
+		this.fetchContract();
 		this.data = [];
 		this.dataMap.clear();
 		this.dates.forEach((day) => {
@@ -219,7 +207,6 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 			this.dataMap.set(this.getIndexFromDate(record.day), record);
 		});
 		this.data = Array.from(this.dataMap.values());
-		this.fetchContract();
 		const signedMonthSubscription = this.rest.fetchSignedMonths(month, year).subscribe({
 			next: response => {
 				this.isSignedMonth = response.data?.length > 0;
@@ -232,13 +219,40 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	private fetchContract(): void {
 		const contractSubscription = this.rest.fetchContract(this.currentMonth, this.currentYear).subscribe({
 			next: (response) => {
-				this.contract = response.data;
+				if (response.data.length > 0){
+					this.hasContract = true;
+					this.contract = response.data[0];
+					if (response.data.length > 1) {
+						console.warn("more than 1 contract found but currently not supported", response);
+					}
+				} else {
+					this.hasContract = false;
+					this.contract = undefined;
+				}
+				this.calculatePlannedTime();
 			},
 			error: (err) => {
 				console.error("Error while fetching contract", err);
 			},
 		});
 		this.subscriptions.add(contractSubscription);
+	}
+
+	private calculatePlannedTime(){
+		const nextTimeMap: number[] = [];
+		this.contract?.timePerWeekday.forEach((dailyTime) => {
+			nextTimeMap[dailyTime.weekday] = dailyTime.time;
+		});
+		this.contractTimeMap.next(nextTimeMap);
+		let timeSum = 0;
+		this.dates.forEach((date) => {
+			// isoWeekday: Mo->1, Di->2, ..., So->7
+			const time = nextTimeMap[date.isoWeekday()];
+			if(time) {
+				timeSum = timeSum + time;
+			}
+		});
+		this.plannedTime = timeSum;
 	}
 
 	private getIndexFromDate(date: Moment): number {

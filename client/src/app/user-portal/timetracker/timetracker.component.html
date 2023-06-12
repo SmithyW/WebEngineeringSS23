@@ -13,9 +13,9 @@
         <tbody>
           <tr>
             <td>{{getMonthName(currentMonth, false) + " " + currentYear}}</td>
-            <td class="text-end">{{monthSum}}</td>
-            <td class="text-end"></td>
-            <td class="text-end"></td>
+            <td class="text-end">{{formatDurationAsTime(currentTime)}}</td>
+            <td class="text-end">{{plannedTime}}</td>
+            <td class="text-end">{{getTimeDiff()}}</td>
           </tr>
         </tbody>
       </table>
@@ -68,55 +68,63 @@
     </div>
   </div>
 
-  <div class="mt-3 table-responsive" data-bs-smooth-scroll="true">
-    <table class="table table-sm">
-      <thead class="bg-secondary text-light">
-        <tr>
-          <th colspan="2" scope="col" class="d-none d-lg-table-cell">Datum</th>
-          <th colspan="1" scope="col" class="d-table-cell d-lg-none">Datum</th>
-          <th scope="col" class="text-center">Arbeitsbeginn</th>
-          <th scope="col" class="text-center">Arbeitsende</th>
-          <th scope="col" class="text-center">Dauer Pausen</th>
-          <th scope="col" class="text-center">Erfasste Arbeitszeit</th>
-          <th scope="col" class="d-none d-lg-table-cell text-center">Geplante Arbeitszeit</th>
-          <th scope="col" class="d-none d-sm-table-cell text-center">Mehr-/ Minderstunden</th>
-          <th scope="col" class="d-none d-md-table-cell text-center">Bemerkungen</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let dayRecord of data">
-          <ng-container [ngSwitch]="getDayType(dayRecord.day)">
-            <ng-container *ngSwitchCase="HOLIDAY">
-              <tr app-disabled-day-row [dayRecord]="dayRecord" [note]="getHolidayName(dayRecord.day)" class="holiday">
-              </tr>
-            </ng-container>
-            <ng-container *ngSwitchCase="WEEKEND">
-              <tr app-disabled-day-row [dayRecord]="dayRecord" class="weekend"></tr>
-            </ng-container>
-            <ng-container *ngSwitchCase="WORKDAY">
-              <tr app-day-row [dayRecord]="dayRecord" (rowForm)="addRowForm($event)" (timeChanges)="updateTime($event)"
-                (workday)="updateWorkday($event)" [disabled]="isSignedMonth"></tr>
-            </ng-container>
-            <ng-container *ngSwitchCase="FUTURE">
-              <tr app-disabled-day-row [dayRecord]="dayRecord" class="future"></tr>
+  <ng-template #noContract>
+    <p>Für diesen Monat wurde kein Vertrag gefunden, für den Arbeitszeiten eingetragen werden können!</p>
+  </ng-template>
+
+  <ng-container *ngIf="hasContract; else noContract">
+    <div class="mt-3 table-responsive" data-bs-smooth-scroll="true">
+      <table class="table table-sm">
+        <thead class="bg-secondary text-light">
+          <tr>
+            <th colspan="2" scope="col" class="d-none d-lg-table-cell">Datum</th>
+            <th colspan="1" scope="col" class="d-table-cell d-lg-none">Datum</th>
+            <th scope="col" class="text-center">Arbeitsbeginn</th>
+            <th scope="col" class="text-center">Arbeitsende</th>
+            <th scope="col" class="text-center">Dauer Pausen</th>
+            <th scope="col" class="text-center">Erfasste Zeit</th>
+            <th scope="col" class="d-none d-lg-table-cell text-center">Geplante Zeit</th>
+            <th scope="col" class="d-none d-sm-table-cell text-center">Mehr-/ Minderstunden</th>
+            <th scope="col" class="d-none d-md-table-cell text-center">Bemerkungen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let dayRecord of data">
+            <ng-container [ngSwitch]="getDayType(dayRecord.day)">
+              <ng-container *ngSwitchCase="HOLIDAY">
+                <tr app-disabled-day-row [dayRecord]="dayRecord" [note]="getHolidayName(dayRecord.day)" class="holiday">
+                </tr>
+              </ng-container>
+              <ng-container *ngSwitchCase="WEEKEND">
+                <tr app-disabled-day-row [dayRecord]="dayRecord" class="weekend"></tr>
+              </ng-container>
+              <ng-container *ngSwitchCase="WORKDAY">
+                <tr app-day-row [dayRecord]="dayRecord" [contractTimeMap]="contractTimeMap" (rowForm)="addRowForm($event)"
+                  (timeChanges)="updateTime($event)" (workday)="updateWorkday($event)" [disabled]="isSignedMonth"></tr>
+              </ng-container>
+              <ng-container *ngSwitchCase="FUTURE">
+                <tr app-disabled-day-row [dayRecord]="dayRecord" class="future"></tr>
+              </ng-container>
             </ng-container>
           </ng-container>
-        </ng-container>
-      </tbody>
-    </table>
-  </div>
+        </tbody>
+      </table>
+    </div>
 
-  <div class="position-sticky bottom-0">
-    <div class="py-3" style="background-color: white;">
-      <button type="button" (click)="save()" class="btn btn-primary me-3" [disabled]="forms.pristine || isSignedMonth"
-        id="save">Speichern</button>
-      <button type="button" (click)="sign()" class="btn btn-outline-secondary"
-        [disabled]="!forms.pristine || !isMonthCompleted() || isSignedMonth" id="sign">Signieren und Freigeben</button>
-      <label *ngIf="!isMonthCompleted()" for="sign" class="text-danger ms-2">Der Monat muss zum Signieren und Freigeben
-        abgeschlossen sein.</label>
-      <div *ngIf="isSignedMonth" class="text-danger mt-2">
-        Dieser Monat wurde bereits signiert und kann nicht mehr geändert werden!
+    <div class="position-sticky bottom-0">
+      <div class="py-3" style="background-color: white;">
+        <button type="button" (click)="save()" class="btn btn-primary me-3" [disabled]="forms.pristine || isSignedMonth"
+          id="save">Speichern</button>
+        <button type="button" (click)="sign()" class="btn btn-outline-secondary"
+          [disabled]="!forms.pristine || !isMonthCompleted() || isSignedMonth" id="sign">Signieren und
+          Freigeben</button>
+        <label *ngIf="!isMonthCompleted()" for="sign" class="text-danger ms-2">Der Monat muss zum Signieren und
+          Freigeben
+          abgeschlossen sein.</label>
+        <div *ngIf="isSignedMonth" class="text-danger mt-2">
+          Dieser Monat wurde bereits signiert und kann nicht mehr geändert werden!
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 </div>
