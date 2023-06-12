@@ -25,7 +25,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	readonly WORKDAY = DayType.WORKDAY;
 	readonly FUTURE = DayType.FUTURE;
 
-  readonly TODAY = new Date(new Date().setHours(0,0,0,0));
+	readonly TODAY = new Date(new Date().setHours(0, 0, 0, 0));
 	data: DayRecord[] = [];
 	forms: FormArray<AbstractControl> = new FormArray<AbstractControl>([]);
 	dateForm: FormGroup | undefined;
@@ -59,7 +59,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		private dateTimeUtil: DateTimeUtilsService,
 		private rest: RestService,
 		private authService: AuthenticationService,
-		private saveService: WorkdaySaveService,
+		private saveService: WorkdaySaveService
 	) {
 		this.currentMonth = this.dateTimeUtil.getCurrentMonth();
 		this.currentYear = new Date().getFullYear();
@@ -91,8 +91,8 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		} else if (moment(day).toDate() > this.TODAY) {
 			return DayType.FUTURE;
 		} else {
-      return DayType.WORKDAY;
-    }
+			return DayType.WORKDAY;
+		}
 	}
 
 	getHolidayName(day: Moment): string {
@@ -117,17 +117,15 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	sign() {
-	  const signWorkdaysSubscription =
-      this.rest.signWorkdays(this.currentMonth, this.currentYear)
-        .subscribe({
-          next: (response) => {
-            console.log(response);
-          },
-          error: (error) => {
-            console.log(error);
-          }
-        });
-  }
+		const signWorkdaysSubscription = this.rest.signWorkdays(this.currentMonth, this.currentYear).subscribe({
+			next: (response) => {
+				console.log(response);
+			},
+			error: (error) => {
+				console.log(error);
+			},
+		});
+	}
 
 	isMonthCompleted(): boolean {
 		return this.dates[this.dates.length - 1].isBefore(moment.now());
@@ -168,7 +166,19 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 				}
 			});
 		}
-		return this.dateTimeUtil.formatDurationAsTime(timeSum);
+		const hours = Math.floor(timeSum.asHours());
+		const minutes = (timeSum.asHours() % 1) * 60;
+		console.error(timeSum, { asHours: timeSum.asHours(), asMinutes: timeSum.asMinutes() });
+		return (
+			hours.toLocaleString(undefined, {
+				maximumFractionDigits: 0
+			}) +
+			":" +
+			minutes.toLocaleString(undefined, {
+				maximumFractionDigits: 0,
+				minimumIntegerDigits: 2,
+			})
+		);
 	}
 
 	private fetchWorkdays(): void {
@@ -192,6 +202,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	private setMonth(month: Month = this.currentMonth, year: number = this.currentYear): void {
+		this.timeMap.clear();
 		this.dates = this.dateTimeUtil.getDaysInMonth(month, year);
 		this.data = [];
 		this.dataMap.clear();
@@ -236,5 +247,5 @@ enum DayType {
 	WORKDAY,
 	WEEKEND,
 	HOLIDAY,
-  FUTURE
+	FUTURE,
 }
