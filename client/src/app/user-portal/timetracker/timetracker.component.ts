@@ -25,7 +25,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	readonly WORKDAY = DayType.WORKDAY;
 	readonly FUTURE = DayType.FUTURE;
 
-  readonly TODAY = new Date(new Date().setHours(0,0,0,0));
+	readonly TODAY = new Date(new Date().setHours(0, 0, 0, 0));
 	data: DayRecord[] = [];
 	forms: FormArray<AbstractControl> = new FormArray<AbstractControl>([]);
 	dateForm: FormGroup | undefined;
@@ -46,6 +46,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		weeklyTime: 10,
 	};
 	monthSum: string = "";
+	isSignedMonth: boolean = false;
 
 	readonly months = Month;
 
@@ -59,7 +60,7 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		private dateTimeUtil: DateTimeUtilsService,
 		private rest: RestService,
 		private authService: AuthenticationService,
-		private saveService: WorkdaySaveService,
+		private saveService: WorkdaySaveService
 	) {
 		this.currentMonth = this.dateTimeUtil.getCurrentMonth();
 		this.currentYear = new Date().getFullYear();
@@ -91,8 +92,8 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		} else if (moment(day).toDate() > this.TODAY) {
 			return DayType.FUTURE;
 		} else {
-      return DayType.WORKDAY;
-    }
+			return DayType.WORKDAY;
+		}
 	}
 
 	getHolidayName(day: Moment): string {
@@ -169,7 +170,18 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 				}
 			});
 		}
-		return this.dateTimeUtil.formatDurationAsTime(timeSum);
+		const hours = Math.floor(timeSum.asHours());
+		const minutes = (timeSum.asHours() % 1) * 60;
+		return (
+			hours.toLocaleString(undefined, {
+				maximumFractionDigits: 0
+			}) +
+			":" +
+			minutes.toLocaleString(undefined, {
+				maximumFractionDigits: 0,
+				minimumIntegerDigits: 2,
+			})
+		);
 	}
 
 	private fetchWorkdays(): void {
@@ -193,6 +205,8 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 	}
 
 	private setMonth(month: Month = this.currentMonth, year: number = this.currentYear): void {
+		this.timeMap.clear();
+		this.forms.clear();
 		this.dates = this.dateTimeUtil.getDaysInMonth(month, year);
 		this.data = [];
 		this.dataMap.clear();
@@ -206,6 +220,13 @@ export class TimetrackerComponent implements OnInit, OnDestroy {
 		});
 		this.data = Array.from(this.dataMap.values());
 		this.fetchContract();
+		const signedMonthSubscription = this.rest.fetchSignedMonths(month, year).subscribe({
+			next: response => {
+				this.isSignedMonth = response.data?.length > 0;
+			},
+			error: error => console.error("error while fetching signed month", error)
+		});
+		this.subscriptions.add(signedMonthSubscription);
 	}
 
 	private fetchContract(): void {
@@ -237,5 +258,5 @@ enum DayType {
 	WORKDAY,
 	WEEKEND,
 	HOLIDAY,
-  FUTURE
+	FUTURE,
 }

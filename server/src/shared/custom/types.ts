@@ -1,5 +1,6 @@
 import { Month } from '@shared/enums/month.enum';
 import { Contract } from '@shared/models/contract.model';
+import { SignedMonth } from '@shared/models/signed-month.model';
 import { User } from '@shared/models/user.model';
 import { Workday } from '@shared/models/workday.model';
 
@@ -29,3 +30,4 @@ export type MonthYear = {
 export type ContractData = ExcludeFuntions<Contract>;
 export type UserData = ExcludeFuntions<User>;
 export type WorkdayData = ExcludeFuntions<Workday>;
+export type SignedMonthData = ExcludeFuntions<SignedMonth>;
