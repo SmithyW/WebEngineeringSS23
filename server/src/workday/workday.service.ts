@@ -59,11 +59,10 @@ export class WorkdayService {
     return this.workdayModel.findOne({ _id: id }).populate('user').exec();
   }
 
-  async sign(user: string, month: number, year: number): Promise<{ success: boolean, message?: string }> {
+  async sign(user: string, month: number, year: number): Promise<{ success: boolean, message?: string, code?: number, error?: object }> {
     const today: Date = new Date(Date.now());
-    console.log(month);
     const monthToSign: Date = new Date(year, month, 0);
-    console.log(monthToSign);
+
     if (today <= monthToSign) {
       return new Promise((resolve) => {
         resolve({
@@ -80,54 +79,47 @@ export class WorkdayService {
     };
 
     let workdaysInMonth: Workday[];
-    try {
-      workdaysInMonth = await this.findAll(filter, false);
-    } catch (err) {
-      console.log(err);
-      return new Promise((resolve, reject) => {
-        reject({
-          success: false,
-          message: err.message,
-          error: err,
-        });
-      });
-    }
+    return this.findAll(filter, false).then((workdays: Workday[]) => {
+      workdaysInMonth = this.orderWorkdays(workdays);
 
-    // Sort Objects in Array
-    workdaysInMonth = this.orderWorkdays(workdaysInMonth);
-
-    if (!workdaysInMonth || workdaysInMonth.length == 0) {
-      return new Promise((resolve, reject) => {
-        reject({
+      if (!workdaysInMonth || workdaysInMonth.length == 0) {
+        return {
           success: false,
           message: 'No entries to sign for provided month',
-        });
-      });
-    }
-    console.log(workdaysInMonth);
-    const hashVal = createHash('sha256').update(JSON.stringify(workdaysInMonth)).digest('hex');
-    console.log(hashVal);
-    const signedMonth: SignedMonthDto = new SignedMonthDto();
-    signedMonth.year = year;
-    signedMonth.month = month;
-    signedMonth.user = user;
-    signedMonth.objectHash = hashVal;
-    console.log(signedMonth);
-    return this.signedMonthService.create(signedMonth).then((res) => {
-      return new Promise((resolve, reject) => {
-        console.log(res);
-        if (res) {
-          resolve({
-            success: true,
-            message: 'Month was successfully signed',
-          });
         }
-        reject({
+      }
+
+      const hashVal = createHash('sha256').update(JSON.stringify(workdaysInMonth)).digest('hex');
+      const signedMonth: SignedMonthDto = new SignedMonthDto();
+      signedMonth.year = year;
+      signedMonth.month = month;
+      signedMonth.user = user;
+      signedMonth.objectHash = hashVal;
+      return this.signedMonthService.create(signedMonth).then((res) => {
+          if (res) {
+            return {
+              success: true,
+              message: 'Month was successfully signed',
+            };
+          }
+          return {
+            success: false,
+            message: 'Month could not be signed',
+          }
+      }).catch((error) => {
+        let errMsg = 'Error signing the month';
+        if (error.code === 11000) {
+          errMsg = 'This month was already signed';
+        }
+        return {
           success: false,
-          message: 'Month could not be signed',
-        });
+          code: error.code,
+          message: errMsg,
+          error: error,
+       }
       });
     });
+
   }
 
   update(id: string, updateWorkdayDto: UpdateWorkdayDto): Promise<Workday> {
@@ -145,10 +137,13 @@ export class WorkdayService {
   * */
 
   private orderWorkdays(arr: Workday[]) {
-    return arr.map((element: Workday) => this.sortObj(element));
+    return arr.map((element: Workday) => this.sortObj<Workday>(element));
   }
 
   private sortObj<T>(obj: T): T {
+    // Ugly stringify and parsing to eliminate wrapper properties
+    const tempStr = JSON.stringify(obj);
+    obj = JSON.parse(tempStr);
       return Object.keys(obj)
       .sort().reduce(function (result, key) {
         result[key] = obj[key];

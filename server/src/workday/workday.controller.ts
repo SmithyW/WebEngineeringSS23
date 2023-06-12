@@ -166,16 +166,19 @@ export class WorkdayController {
     }
 
     return this.workdayService.sign(userId, signRequestDto.month, signRequestDto.year)
-      .then((res: { success: boolean, message?: string }) => {
+      .then((res: { success: boolean, message?: string, code?: number, error?: object }) => {
         return response.status(HttpStatus.OK).json({
           success: res.success,
+          code: res.code,
           message: res.message,
+          error: res.error
         });
       })
       .catch((error) => {
         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           success: false,
-          message: 'Error',
+          code: error.code,
+          message: error.message,
           error: error
         });
       });
